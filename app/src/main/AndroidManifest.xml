@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:tools="http://schemas.android.com/tools"
+          package="com.athila.mvpweather"
+          xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_app_icon"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/MVPWeatherDefaultTheme">
+
+        <!-- key for places API -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyA-s7QGWYFnpuYlwnCVJwpm8tWqoF9TP5Q"/>
+
+        <activity
+            android:name="com.athila.mvpweather.presentation.forecast.ForecastActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/MVPWeatherDefaultTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.athila.mvpweather.presentation.citieslist.CitiesListActivity"
+            android:label="@string/title_activity_cities_list"
+            android:configChanges="orientation|screenSize"
+            android:parentActivityName="com.athila.mvpweather.presentation.forecast.ForecastActivity"
+            android:theme="@style/MVPWeatherDefaultTheme"
+            tools:ignore="UnusedAttribute">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.athila.mvpweather.presentation.forecast.ForecastActivity" />
+        </activity>
+    </application>
+
+</manifest>

@@ -1,0 +1,45 @@
+<resources>
+    <string name="app_name">MVP Weather</string>
+
+    <string name="error_no_internet_connection">No internet connection.</string>
+    <string name="error_generic">An unexpected error has occurred. Please, try again later.</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="content_description_current_conditions">Current conditions</string>
+    <string name="current_conditions">Current Conditions</string>
+    <string name="forecast_icon">Forecast icon</string>
+    <string name="temperature">%1$s&#xb0;</string>
+    <string name="content_description_refresh_button">Refresh button</string>
+
+    <string name="city_london">London</string>
+    <string name="city_dublin">Dublin</string>
+    <string name="city_new_york">New York</string>
+    <string name="city_barcelona">Barcelona</string>
+    <string name="title_activity_cities_list">Cities</string>
+    <string name="nav_cities">Cities</string>
+    <string name="author_name">Athila Santos</string>
+    <string name="dialog_addcity_city_name_hint">City Name</string>
+    <string name="dialog_addcity_city_latitude_hint">Latitude</string>
+    <string name="dialog_addcity_city_longitude_hint">Longitude</string>
+    <string name="error_generic_forecast">It seems there is a problem with the city you selected. Please, select another one.</string>
+    <string name="error_validation_empty_field">This field cannot be empty</string>
+    <string name="error_validation_invalid_coordinate_field">This coordinate is invalid. Must be floating-point number</string>
+    <string name="error_validation_invalid_coordinates">Invalid coordinates. Please select another place.</string>
+    <string name="coordinates_representation">%1$s, %2$s</string>
+    <string name="permission_explanation">We need your permission to enable cities search.</string>
+    <string name="message_cities_deleted">%1$s cities deleted.</string>
+    <string name="message_city_edited">City edited successfully.</string>
+
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="forecast_empty_message">There is no city registered. Access the cities list screen from Navigation Drawer and register a new city.</string>
+    <string name="cities_list_empty_message">There is no city registered.</string>
+    <plurals name="cities_selected_count">
+        <item quantity="one">%1$s city selected</item>
+        <item quantity="other">%1$s cities selected</item>
+    </plurals>
+</resources>

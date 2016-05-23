@@ -1,0 +1,102 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.neenbedankt.android-apt'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        applicationId "com.athila.mvpweather"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+
+        buildConfigField("String", "HOST", "\"https://api.forecast.io/\"")
+
+        // For vector drawables in support library
+        vectorDrawables.useSupportLibrary = true
+    }
+
+    signingConfigs {
+        release {
+            // TODO: in a real project, store this in system variables
+            keyAlias 'MttWheatherKey'
+            keyPassword 'XVE2sUCyak9J8CRf'
+            storeFile file("../cert/mvpwheather.jks")
+            storePassword 'T9cLcnNY9PDehEHa'
+        }
+    }
+
+    buildTypes {
+        debug {
+            applicationIdSuffix ".debug"
+            buildConfigField("int", "LOG_LEVEL", "4") // MvpWeatherLog.LOG_LEVEL_DEBUG = 4;
+        }
+
+        stage {
+            initWith(buildTypes.debug)
+
+            applicationIdSuffix ".stage"
+            buildConfigField("int", "LOG_LEVEL", "2") // MvpWeatherLog.LOG_LEVEL_WARN = 2;
+            // Set base URL for stage builds
+            // buildConfigField("String", "HOST", "\"<stage_base_url>\"")
+        }
+
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+
+            buildConfigField("int", "LOG_LEVEL", "0") // MvpWeatherLog.LOG_LEVEL_NONE = 0;
+            // Set base URL for production builds
+            // buildConfigField("String", "HOST", "\"<production_base_url>\"")
+        }
+    }
+
+    productFlavors {
+        // For this app, lets use flavor to make DI. In a real project consider using Dagger2
+        mock {
+            applicationIdSuffix = ".mock"
+        }
+        prod {
+
+        }
+    }
+
+    // For Butter Knife
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
+    compile "com.android.support:support-v4:$rootProject.supportLibraryVersion"
+    compile "com.android.support:design:$rootProject.supportLibraryVersion"
+    compile "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
+    compile "com.google.android.gms:play-services-location:$rootProject.googlePlayServicesVersion"
+    compile "com.jakewharton:butterknife:$rootProject.butterKnifeVersion"
+    compile "com.squareup.retrofit2:retrofit:$rootProject.retrofitVersion"
+    compile "com.squareup.retrofit2:converter-gson:$rootProject.retrofitVersion"
+    compile "com.squareup.okhttp3:logging-interceptor:$rootProject.retrofitLoggingInterceptorVersion"
+    compile "com.squareup.retrofit2:adapter-rxjava:$retrofitVersion"
+    compile "io.reactivex:rxandroid:$rootProject.rxAndroidVersion"
+    compile "io.reactivex:rxjava:$rootProject.rxAndroidVersion"
+
+    // storIO
+    compile "com.pushtorefresh.storio:sqlite:$rootProject.storIOVersion"
+    compile "com.pushtorefresh.storio:sqlite-annotations:$rootProject.storIOVersion"
+    apt "com.pushtorefresh.storio:sqlite-annotations-processor:$rootProject.storIOVersion"
+
+    // Dependencies for local unit tests
+    testCompile "junit:junit:$rootProject.junitVersion"
+    testCompile "org.mockito:mockito-all:$rootProject.mockitoVersion"
+    testCompile "org.powermock:powermock-module-junit4:$rootProject.powerMockitoVersion"
+    testCompile "org.powermock:powermock-api-mockito:$rootProject.powerMockitoVersion"
+}

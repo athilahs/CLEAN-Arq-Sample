@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:id="@+id/generic_error_layout"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="@color/colorErrorBg"
+              android:orientation="vertical"
+              android:padding="10dp">
+
+    <TextView
+        android:id="@+id/generic_error_message"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:drawableLeft="@drawable/ic_error_generic"
+        android:drawablePadding="10dp"
+        android:drawableStart="@drawable/ic_error_generic"
+        android:gravity="center_vertical"
+        android:textColor="@android:color/white"
+        tools:text="There is no internet connection."/>
+
+</LinearLayout>

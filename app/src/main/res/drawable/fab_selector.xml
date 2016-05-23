@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- For Pre-Lollipo devices, we need to create a selector in order to use vector drawables on any element but in ImageView -->
+    <item android:drawable="@drawable/ic_cross" />
+</selector>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:padding="20dp">
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.athila.mvpweather.presentation.customviews.ShakerEditText
+            android:id="@+id/dialog_addCity_editText_city_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/dialog_addcity_city_name_hint"
+            android:inputType="textCapWords"
+            android:maxLines="1"
+            android:singleLine="true"
+            app:errorMessage="@string/error_validation_empty_field"/>
+    </android.support.design.widget.TextInputLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <com.athila.mvpweather.presentation.customviews.ShakerEditText
+            android:id="@+id/dialog_addCity_editText_city_latitude"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/dialog_addcity_city_latitude_hint"
+            android:inputType="numberDecimal|numberSigned"
+            android:maxLines="1"
+            android:singleLine="true"
+            app:errorMessage="@string/error_validation_invalid_coordinate_field"/>
+
+        <com.athila.mvpweather.presentation.customviews.ShakerEditText
+            android:id="@+id/dialog_addCity_editText_city_longitude"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/dialog_addcity_city_longitude_hint"
+            android:inputType="numberDecimal|numberSigned"
+            android:maxLines="1"
+            android:singleLine="true"
+            app:errorMessage="@string/error_validation_invalid_coordinate_field"/>
+    </LinearLayout>
+
+</LinearLayout>
