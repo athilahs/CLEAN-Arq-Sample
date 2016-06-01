@@ -1,8 +1,8 @@
 package com.athila.mvpweather.presentation.citieslist;
 
 import com.athila.mvpweather.data.model.City;
-import com.athila.mvpweather.presentation.GenericPresenter;
-import com.athila.mvpweather.presentation.GenericView;
+import com.athila.mvpweather.presentation.BasePresenter;
+import com.athila.mvpweather.presentation.BaseView;
 
 import java.util.List;
 
@@ -10,8 +10,9 @@ import java.util.List;
  * Created by athila on 05/03/16.
  */
 public interface CitiesListContract {
-    interface View extends GenericView {
+    interface View extends BaseView<CitiesListContract.Presenter> {
         // No specific error handling. DB operations errors could be handled as generic errors
+        void handleGenericErrors(Throwable error);
         void showCitiesList(List<City> citiesList);
         void showEmptyView();
         void onCityEditionFinished(City updatedCity);
@@ -32,7 +33,7 @@ public interface CitiesListContract {
         void openPermissionFlowIfNeeded();
     }
 
-    interface Presenter extends GenericPresenter<CitiesListContract.View> {
+    interface Presenter extends BasePresenter {
         void getCities();
         void updateCity(City updatedCity);
         void deleteCities(List<City> citiesToDelete);

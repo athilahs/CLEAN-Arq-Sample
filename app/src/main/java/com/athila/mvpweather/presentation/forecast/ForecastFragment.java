@@ -17,14 +17,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.athila.mvpweather.Injection;
 import com.athila.mvpweather.R;
 import com.athila.mvpweather.data.model.City;
 import com.athila.mvpweather.data.model.DataPoint;
 import com.athila.mvpweather.data.model.Forecast;
+import com.athila.mvpweather.di.component.presentation.DaggerForecastComponent;
+import com.athila.mvpweather.di.component.ForecastComponent;
+import com.athila.mvpweather.di.module.presentation.ForecastPresenterModule;
+import com.athila.mvpweather.infrastructure.MvpWeatherApp;
 import com.athila.mvpweather.presentation.BaseFragment;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -47,7 +52,11 @@ public class ForecastFragment extends BaseFragment implements ForecastContract.V
     @Bind(R.id.weather_screen_textView_current_conditions_temperature)
     TextView mCurrentConditionsTemperature;
 
-    private ForecastPresenter mPresenter;
+    ForecastComponent mForecastComponent;
+
+    @Inject
+    ForecastPresenter mPresenter;
+
     private ForecastAdapter mForecastAdapter;
 
     private ForecastContract.OnCitiesLoadedListener mOnCitiesLoadedListener;
@@ -77,6 +86,28 @@ public class ForecastFragment extends BaseFragment implements ForecastContract.V
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        // initialize injector
+        // TODO: delegate injections to activity?
+        mForecastComponent = DaggerForecastComponent.builder()
+                .applicationComponent(((MvpWeatherApp)(getActivity().getApplication())).getApplicationComponent())
+                .forecastPresenterModule(new ForecastPresenterModule(this))
+                .build();
+        mForecastComponent.inject(this);
+
+        // put this call in onActivityCreated since the callback for the getCities operation is handled by activity
+        mPresenter.getCities();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mForecastComponent = null;
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
@@ -93,13 +124,11 @@ public class ForecastFragment extends BaseFragment implements ForecastContract.V
         super.onDestroyView();
         ButterKnife.unbind(this);
 
-        mPresenter.detachView();
+        mPresenter.stop();
     }
 
 
     private void init() {
-        mPresenter = new ForecastPresenter(Injection.provideForecastRepository(), Injection.provideCityRepository(getActivity()));
-        mPresenter.attachView(this);
         mForecastList.setHasFixedSize(true);
         mForecastAdapter = new ForecastAdapter(getActivity());
         mForecastList.setAdapter(mForecastAdapter);
@@ -107,11 +136,8 @@ public class ForecastFragment extends BaseFragment implements ForecastContract.V
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        // put this call in onActivityCreated since the callback for the getCities operation is handled by activity
-        mPresenter.getCities();
+    public void setPresenter(@NonNull ForecastContract.Presenter presenter) {
+        mPresenter = (ForecastPresenter) presenter;
     }
 
     @Override
@@ -119,11 +145,6 @@ public class ForecastFragment extends BaseFragment implements ForecastContract.V
         if (mOnProgressRequestListener != null) {
             mOnProgressRequestListener.showProgress();
         }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -156,7 +177,7 @@ public class ForecastFragment extends BaseFragment implements ForecastContract.V
             mCurrentConditionsIcon.setImageDrawable(
                     ContextCompat.getDrawable(getActivity(), ForecastUtils.getWeatherIcon(currentConditions.getIcon())));
             mCurrentConditionsSummary.setText(currentConditions.getSummary());
-            mCurrentConditionsTemperature.setText(getString(R.string.temperature, currentConditions.getTemperature()));
+            mCurrentConditionsTemperature.setText(getString(R.string.temperature, String.valueOf(currentConditions.getTemperature())));
 
             mForecastAdapter.setForecast(forecast);
             mForecastAdapter.notifyDataSetChanged();
@@ -189,5 +210,11 @@ public class ForecastFragment extends BaseFragment implements ForecastContract.V
             // without the cities, we cannot continue
             activity.finish();
         }
+    }
+
+    @Override
+    public void handleGenericErrors(Throwable error) {
+        // from superclass
+        handleBasicErrors(error);
     }
 }

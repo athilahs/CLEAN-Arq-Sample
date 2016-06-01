@@ -53,8 +53,7 @@ public class CitiesListPresenterTest {
     public void setupCitiesListPresenter() {
         MockitoAnnotations.initMocks(this);
 
-        mPresenter = new CitiesListPresenter(mCityRepository);
-        mPresenter.attachView(mView);
+        mPresenter = new CitiesListPresenter(mView, mCityRepository);
     }
 
     @Test
@@ -64,7 +63,7 @@ public class CitiesListPresenterTest {
         mPresenter.setGeneralSubscription(mockCityGeneralSubscription);
         mPresenter.setGetListSubscription(mockCityGetListSubscription);
 
-        mPresenter.detachView();
+        mPresenter.stop();
         verify(mockCityGetListSubscription).unsubscribe();
         verify(mockCityGetListSubscription).unsubscribe();
     }

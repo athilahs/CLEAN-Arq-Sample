@@ -13,6 +13,8 @@ import com.athila.mvpweather.infrastructure.rx.WWSchedulers;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import retrofit2.adapter.rxjava.HttpException;
 import rx.Subscription;
 
@@ -27,18 +29,26 @@ public class ForecastPresenter implements ForecastContract.Presenter {
     private ForecastRepository mForecastRepository;
     private CityRepository mCityRepository;
 
-    public ForecastPresenter(@NonNull ForecastRepository forecastRepository, @NonNull CityRepository cityRepository) {
+    @Inject
+    ForecastPresenter(@NonNull ForecastContract.View forecastView, @NonNull ForecastRepository forecastRepository, @NonNull CityRepository cityRepository) {
+        mView = forecastView;
         mForecastRepository = forecastRepository;
         mCityRepository = cityRepository;
     }
 
     @Override
-    public void attachView(ForecastContract.View view) {
-        mView = view;
+    @Inject
+    public void injectView() {
+        mView.setPresenter(this);
     }
 
     @Override
-    public void detachView() {
+    public void start() {
+        // do nothing
+    }
+
+    @Override
+    public void stop() {
         mView = null;
         if (mForecastSubscription != null) {
             mForecastSubscription.unsubscribe();
@@ -130,12 +140,12 @@ public class ForecastPresenter implements ForecastContract.Presenter {
     }
 
     @VisibleForTesting
-    public void setForecastSubscription(Subscription mockSubscription) {
+    void setForecastSubscription(Subscription mockSubscription) {
         mForecastSubscription = mockSubscription;
     }
 
     @VisibleForTesting
-    public void setCitySubscription(Subscription mockSubscription) {
+    void setCitySubscription(Subscription mockSubscription) {
         mCitySubscription = mockSubscription;
     }
 }

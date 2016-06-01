@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.view.ActionMode;
@@ -20,9 +21,12 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.athila.mvpweather.Injection;
 import com.athila.mvpweather.R;
 import com.athila.mvpweather.data.model.City;
+import com.athila.mvpweather.di.component.CitiesListComponent;
+import com.athila.mvpweather.di.component.presentation.DaggerCitiesListComponent;
+import com.athila.mvpweather.di.module.presentation.CitiesListPresenterModule;
+import com.athila.mvpweather.infrastructure.MvpWeatherApp;
 import com.athila.mvpweather.infrastructure.validator.CoordinateValidator;
 import com.athila.mvpweather.infrastructure.validator.EmptyValidator;
 import com.athila.mvpweather.infrastructure.validator.ValidationException;
@@ -57,7 +61,13 @@ public class CitiesListFragment extends BaseFragment
 
     private CitiesListAdapter mCitiesAdapter;
 
-    private CitiesListPresenter mPresenter;
+    private CitiesListComponent mCitiesListComponent;
+
+//    @Inject
+    // TODO: pensar numa maneira de nao precisar usar tipo especifico aqui
+    // Para usar a anotacao Inject, precisamos especificar o tipo
+    // Observar ex. do todoapp, em que ele usa a Activity para fazer esta injecao
+    CitiesListContract.Presenter mPresenter;
 
     private CitiesListContract.PermissionChecker mPermissionChecker;
 
@@ -83,14 +93,36 @@ public class CitiesListFragment extends BaseFragment
     }
 
     @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        // initialize injector
+        mCitiesListComponent = DaggerCitiesListComponent.builder()
+                .applicationComponent(((MvpWeatherApp)(getActivity().getApplication())).getApplicationComponent())
+                .citiesListPresenterModule(new CitiesListPresenterModule(this))
+                .build();
+        mCitiesListComponent.inject(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // just to make sure
+        mCitiesListComponent = null;
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_cities_list, container, false);
         ButterKnife.bind(this, mRootView);
 
+        return mRootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         init();
         setListeners();
-
-        return mRootView;
     }
 
     private void setListeners() {
@@ -107,13 +139,10 @@ public class CitiesListFragment extends BaseFragment
     public void onDestroyView() {
         super.onDestroyView();
         mRootView = null;
-        mPresenter.detachView();
+        mPresenter.stop();
     }
 
     private void init() {
-        mPresenter = new CitiesListPresenter(Injection.provideCityRepository(getActivity()));
-        mPresenter.attachView(this);
-
         mCitiesList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         mCitiesList.setMultiChoiceModeListener(this);
 
@@ -123,7 +152,12 @@ public class CitiesListFragment extends BaseFragment
 
         mSelectedCities = new ArrayList<>();
 
-        mPresenter.getCities();
+        mPresenter.start();
+    }
+
+    @Override
+    public void setPresenter(CitiesListContract.Presenter presenter) {
+        mPresenter = presenter;
     }
 
     @Override
@@ -157,7 +191,7 @@ public class CitiesListFragment extends BaseFragment
     @Override
     public void onCitiesDeleted(int citiesDeleted) {
         if (mRootView != null && isAdded()) {
-            Snackbar.make(mRootView, getResources().getString(R.string.message_cities_deleted, citiesDeleted),
+            Snackbar.make(mRootView, getResources().getString(R.string.message_cities_deleted, String.valueOf(citiesDeleted)),
                     Snackbar.LENGTH_SHORT).show();
         }
     }
@@ -165,6 +199,11 @@ public class CitiesListFragment extends BaseFragment
     @Override
     public void onCityAdded(City createdCity) {
         Toast.makeText(getActivity(), "City added: " + createdCity.getName(), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void handleGenericErrors(Throwable error) {
+        handleBasicErrors(error);
     }
 
     @Override

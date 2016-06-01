@@ -53,8 +53,7 @@ public class ForecastPresenterTest {
     public void setupForecastPresenter() {
         MockitoAnnotations.initMocks(this);
 
-        mPresenter = new ForecastPresenter(mForecastRepository, mCityRepository);
-        mPresenter.attachView(mView);
+        mPresenter = new ForecastPresenter(mView, mForecastRepository, mCityRepository);
     }
 
     @Test
@@ -87,7 +86,7 @@ public class ForecastPresenterTest {
         mPresenter.setForecastSubscription(mockForecastSubscription);
         mPresenter.setCitySubscription(mockCitySubscription);
 
-        mPresenter.detachView();
+        mPresenter.stop();
         verify(mockForecastSubscription).unsubscribe();
         verify(mockCitySubscription).unsubscribe();
     }

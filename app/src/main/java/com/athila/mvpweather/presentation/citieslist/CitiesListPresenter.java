@@ -15,6 +15,8 @@ import com.pushtorefresh.storio.sqlite.operations.put.PutResults;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import rx.Subscription;
 
 /**
@@ -32,18 +34,15 @@ public class CitiesListPresenter implements CitiesListContract.Presenter {
     private CitiesListContract.View mView;
     private CityRepository mCityRepository;
 
-    public CitiesListPresenter(@NonNull CityRepository cityRepository) {
+    @Inject
+    CitiesListPresenter(@NonNull CitiesListContract.View view, @NonNull CityRepository cityRepository) {
+        mView = view;
         mCityRepository = cityRepository;
     }
 
     @Override
-    public void attachView(CitiesListContract.View view) {
-        mView = view;
-    }
-
-    @Override
-    public void detachView() {
-        MvpWeatherLog.debug("CitiesListPresenter::detachView");
+    public void stop() {
+        MvpWeatherLog.debug("CitiesListPresenter::stop");
         mView = null;
         if (mGeneralSubscription != null) {
             mGeneralSubscription.unsubscribe();
@@ -52,6 +51,17 @@ public class CitiesListPresenter implements CitiesListContract.Presenter {
         if (mGetListSubscription != null) {
             mGetListSubscription.unsubscribe();
         }
+    }
+
+    @Inject
+    @Override
+    public void injectView() {
+        mView.setPresenter(this);
+    }
+
+    @Override
+    public void start() {
+        getCities();
     }
 
     @Override
@@ -206,12 +216,12 @@ public class CitiesListPresenter implements CitiesListContract.Presenter {
     }
 
     @VisibleForTesting
-    public void setGeneralSubscription(Subscription mockSubscription) {
+    void setGeneralSubscription(Subscription mockSubscription) {
         mGeneralSubscription = mockSubscription;
     }
 
     @VisibleForTesting
-    public void setGetListSubscription(Subscription mockSubscription) {
+    void setGetListSubscription(Subscription mockSubscription) {
         mGetListSubscription = mockSubscription;
     }
 }

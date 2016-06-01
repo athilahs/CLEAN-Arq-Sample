@@ -94,6 +94,11 @@ dependencies {
     compile "com.pushtorefresh.storio:sqlite-annotations:$rootProject.storIOVersion"
     apt "com.pushtorefresh.storio:sqlite-annotations-processor:$rootProject.storIOVersion"
 
+    // Dagger2
+    apt "com.google.dagger:dagger-compiler:$rootProject.dagger2Version"
+    compile "com.google.dagger:dagger:$rootProject.dagger2Version"
+    provided "javax.annotation:jsr250-api:1.0"
+
     // Dependencies for local unit tests
     testCompile "junit:junit:$rootProject.junitVersion"
     testCompile "org.mockito:mockito-all:$rootProject.mockitoVersion"

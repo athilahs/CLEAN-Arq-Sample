@@ -1,18 +1,16 @@
 package com.athila.mvpweather.data.repository.city;
 
-import android.content.Context;
-import android.support.annotation.NonNull;
-
-import com.athila.mvpweather.Injection;
-import com.athila.mvpweather.data.datasource.database.storio.StorIOInstance;
 import com.athila.mvpweather.data.datasource.database.table.CitiesTable;
 import com.athila.mvpweather.data.model.City;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.operations.delete.DeleteResults;
 import com.pushtorefresh.storio.sqlite.operations.put.PutResult;
 import com.pushtorefresh.storio.sqlite.operations.put.PutResults;
 import com.pushtorefresh.storio.sqlite.queries.Query;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import rx.Observable;
 
@@ -21,15 +19,16 @@ import rx.Observable;
  */
 public class CityRepositoryImpl implements CityRepository {
 
-    private Context mContext;
+    private StorIOSQLite mStorIOSQLite;
 
-    public CityRepositoryImpl(@NonNull Context context) {
-        mContext = context;
+    @Inject
+    public CityRepositoryImpl(StorIOSQLite storIOSQLite) {
+        mStorIOSQLite = storIOSQLite;
     }
 
     @Override
     public Observable<List<City>> getCities() {
-        return StorIOInstance.get(Injection.provideSQLiteOpenHelper(mContext))
+        return mStorIOSQLite
                 .get()
                 .listOfObjects(City.class)
                 .withQuery(Query.builder()
@@ -42,7 +41,7 @@ public class CityRepositoryImpl implements CityRepository {
 
     @Override
     public Observable<PutResults<City>> insertCities(List<City> cities) {
-        return Observable.just(StorIOInstance.get(Injection.provideSQLiteOpenHelper(mContext))
+        return Observable.just(mStorIOSQLite
                 .put()
                 .objects(cities)
                 .prepare()
@@ -51,7 +50,7 @@ public class CityRepositoryImpl implements CityRepository {
 
     @Override
     public Observable<PutResult> updateCity(City city) {
-        return Observable.just(StorIOInstance.get(Injection.provideSQLiteOpenHelper(mContext))
+        return Observable.just(mStorIOSQLite
                 .put()
                 .object(city)
                 .prepare()
@@ -60,7 +59,7 @@ public class CityRepositoryImpl implements CityRepository {
 
     @Override
     public Observable<DeleteResults<City>> deleteCities(List<City> cities) {
-        return Observable.just(StorIOInstance.get(Injection.provideSQLiteOpenHelper(mContext))
+        return Observable.just(mStorIOSQLite
                 .delete()
                 .objects(cities)
                 .prepare()
