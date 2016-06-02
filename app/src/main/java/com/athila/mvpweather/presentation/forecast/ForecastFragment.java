@@ -21,15 +21,9 @@ import com.athila.mvpweather.R;
 import com.athila.mvpweather.data.model.City;
 import com.athila.mvpweather.data.model.DataPoint;
 import com.athila.mvpweather.data.model.Forecast;
-import com.athila.mvpweather.di.component.presentation.DaggerForecastComponent;
-import com.athila.mvpweather.di.component.ForecastComponent;
-import com.athila.mvpweather.di.module.presentation.ForecastPresenterModule;
-import com.athila.mvpweather.infrastructure.MvpWeatherApp;
 import com.athila.mvpweather.presentation.BaseFragment;
 
 import java.util.List;
-
-import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -52,12 +46,9 @@ public class ForecastFragment extends BaseFragment implements ForecastContract.V
     @Bind(R.id.weather_screen_textView_current_conditions_temperature)
     TextView mCurrentConditionsTemperature;
 
-    ForecastComponent mForecastComponent;
-
-    @Inject
-    ForecastPresenter mPresenter;
-
     private ForecastAdapter mForecastAdapter;
+
+    private ForecastContract.Presenter mPresenter;
 
     private ForecastContract.OnCitiesLoadedListener mOnCitiesLoadedListener;
     private ForecastContract.OnProgressRequestListener mOnProgressRequestListener;
@@ -89,22 +80,8 @@ public class ForecastFragment extends BaseFragment implements ForecastContract.V
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // initialize injector
-        // TODO: delegate injections to activity?
-        mForecastComponent = DaggerForecastComponent.builder()
-                .applicationComponent(((MvpWeatherApp)(getActivity().getApplication())).getApplicationComponent())
-                .forecastPresenterModule(new ForecastPresenterModule(this))
-                .build();
-        mForecastComponent.inject(this);
-
         // put this call in onActivityCreated since the callback for the getCities operation is handled by activity
         mPresenter.getCities();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mForecastComponent = null;
     }
 
     @Override
@@ -137,7 +114,7 @@ public class ForecastFragment extends BaseFragment implements ForecastContract.V
 
     @Override
     public void setPresenter(@NonNull ForecastContract.Presenter presenter) {
-        mPresenter = (ForecastPresenter) presenter;
+        mPresenter = presenter;
     }
 
     @Override

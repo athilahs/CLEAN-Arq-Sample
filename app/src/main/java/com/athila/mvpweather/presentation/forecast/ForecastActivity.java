@@ -1,5 +1,6 @@
 package com.athila.mvpweather.presentation.forecast;
 
+import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -17,10 +18,16 @@ import android.widget.Spinner;
 
 import com.athila.mvpweather.R;
 import com.athila.mvpweather.data.model.City;
+import com.athila.mvpweather.di.component.DaggerForecastComponent;
+import com.athila.mvpweather.di.component.ForecastComponent;
+import com.athila.mvpweather.di.module.presentation.ForecastPresenterModule;
+import com.athila.mvpweather.infrastructure.MvpWeatherApp;
 import com.athila.mvpweather.presentation.citieslist.CitiesListActivity;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -44,6 +51,11 @@ public class ForecastActivity extends AppCompatActivity implements
 
     private CitiesSpinnerAdapter mCitiesAdapter;
     private ForecastContract.OnCitySelectedListener mOnCitySelectedListener;
+
+    private ForecastComponent mForecastComponent;
+
+    @Inject
+    ForecastPresenter mPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +81,30 @@ public class ForecastActivity extends AppCompatActivity implements
 
         setListeners();
         init();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mForecastComponent = null;
+
+        
+    }
+
+    @Override
+    public void onAttachFragment(Fragment fragment) {
+        if (fragment instanceof ForecastContract.View) {
+            initializeInjector((ForecastContract.View)fragment);
+        }
+    }
+
+    private void initializeInjector(ForecastContract.View forecastView) {
+        // initialize injector
+        mForecastComponent = DaggerForecastComponent.builder()
+                .applicationComponent(((MvpWeatherApp)(getApplication())).getApplicationComponent())
+                .forecastPresenterModule(new ForecastPresenterModule(forecastView))
+                .build();
+        mForecastComponent.inject(this);
     }
 
     private void setListeners() {
@@ -111,7 +147,6 @@ public class ForecastActivity extends AppCompatActivity implements
         }
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
@@ -144,7 +179,7 @@ public class ForecastActivity extends AppCompatActivity implements
         mRefreshButton.setVisibility(View.VISIBLE);
     }
 
-    public void setOnCitySelectedListener(ForecastContract.OnCitySelectedListener onCitySelectedListener) {
+    void setOnCitySelectedListener(ForecastContract.OnCitySelectedListener onCitySelectedListener) {
         mOnCitySelectedListener = onCitySelectedListener;
     }
 }

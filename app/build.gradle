@@ -67,6 +67,7 @@ android {
     // For Butter Knife
     lintOptions {
         disable 'InvalidPackage'
+        abortOnError false
     }
 
     testOptions {

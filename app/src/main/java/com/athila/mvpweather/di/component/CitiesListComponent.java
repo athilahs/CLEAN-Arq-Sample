@@ -1,9 +1,8 @@
 package com.athila.mvpweather.di.component;
 
-import com.athila.mvpweather.di.FragmentScoped;
-import com.athila.mvpweather.di.component.ApplicationComponent;
+import com.athila.mvpweather.di.ActivityScoped;
 import com.athila.mvpweather.di.module.presentation.CitiesListPresenterModule;
-import com.athila.mvpweather.presentation.citieslist.CitiesListFragment;
+import com.athila.mvpweather.presentation.citieslist.CitiesListActivity;
 
 import dagger.Component;
 
@@ -11,9 +10,9 @@ import dagger.Component;
  * Created by athila on 30/05/16.
  */
 
-@FragmentScoped
+@ActivityScoped
 @Component(dependencies = ApplicationComponent.class, modules = {CitiesListPresenterModule.class})
-public interface CitiesListComponent /*extends CityRepositoryComponent*/ {
+public interface CitiesListComponent {
 
-    void inject(CitiesListFragment citiesListFragment);
+    void inject(CitiesListActivity citiesListActivity);
 }

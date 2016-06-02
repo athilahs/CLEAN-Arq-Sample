@@ -1,6 +1,7 @@
 package com.athila.mvpweather.presentation.citieslist;
 
 import android.Manifest;
+import android.app.Fragment;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,6 +14,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.athila.mvpweather.R;
+import com.athila.mvpweather.di.component.CitiesListComponent;
+import com.athila.mvpweather.di.component.DaggerCitiesListComponent;
+import com.athila.mvpweather.di.module.presentation.CitiesListPresenterModule;
+import com.athila.mvpweather.infrastructure.MvpWeatherApp;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -30,6 +37,11 @@ public class CitiesListActivity extends AppCompatActivity implements CitiesListC
     @Bind(R.id.cities_list_screen_parent_layout)
     View mParentLayout;
 
+    private CitiesListComponent mCitiesListComponent;
+
+    @Inject
+    CitiesListPresenter mPresenter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,7 +57,29 @@ public class CitiesListActivity extends AppCompatActivity implements CitiesListC
         setListeners();
     }
 
-    public void setCityManagementController(CitiesListContract.CityManagementController cityManagementController) {
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mCitiesListComponent = null;
+    }
+
+    @Override
+    public void onAttachFragment(Fragment fragment) {
+        if (fragment instanceof CitiesListContract.View) {
+            initializeInjector((CitiesListContract.View)fragment);
+        }
+    }
+
+    private void initializeInjector(CitiesListContract.View citiesListView) {
+        // initialize injector
+        mCitiesListComponent = DaggerCitiesListComponent.builder()
+                .applicationComponent(((MvpWeatherApp)(getApplication())).getApplicationComponent())
+                .citiesListPresenterModule(new CitiesListPresenterModule(citiesListView))
+                .build();
+        mCitiesListComponent.inject(this);
+    }
+
+    void setCityManagementController(CitiesListContract.CityManagementController cityManagementController) {
         mCityManagementController = cityManagementController;
     }
 

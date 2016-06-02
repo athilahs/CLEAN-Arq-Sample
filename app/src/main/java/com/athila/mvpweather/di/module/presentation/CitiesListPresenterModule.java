@@ -15,7 +15,7 @@
  */
 package com.athila.mvpweather.di.module.presentation;
 
-import com.athila.mvpweather.di.FragmentScoped;
+import com.athila.mvpweather.di.ActivityScoped;
 import com.athila.mvpweather.presentation.citieslist.CitiesListContract;
 
 import dagger.Module;
@@ -33,7 +33,7 @@ public class CitiesListPresenterModule {
         mView = view;
     }
 
-    @FragmentScoped
+    @ActivityScoped
     @Provides
     CitiesListContract.View provideCitiesListContractView() {
         return mView;

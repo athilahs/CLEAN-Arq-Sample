@@ -23,10 +23,6 @@ import android.widget.Toast;
 
 import com.athila.mvpweather.R;
 import com.athila.mvpweather.data.model.City;
-import com.athila.mvpweather.di.component.CitiesListComponent;
-import com.athila.mvpweather.di.component.presentation.DaggerCitiesListComponent;
-import com.athila.mvpweather.di.module.presentation.CitiesListPresenterModule;
-import com.athila.mvpweather.infrastructure.MvpWeatherApp;
 import com.athila.mvpweather.infrastructure.validator.CoordinateValidator;
 import com.athila.mvpweather.infrastructure.validator.EmptyValidator;
 import com.athila.mvpweather.infrastructure.validator.ValidationException;
@@ -61,13 +57,7 @@ public class CitiesListFragment extends BaseFragment
 
     private CitiesListAdapter mCitiesAdapter;
 
-    private CitiesListComponent mCitiesListComponent;
-
-//    @Inject
-    // TODO: pensar numa maneira de nao precisar usar tipo especifico aqui
-    // Para usar a anotacao Inject, precisamos especificar o tipo
-    // Observar ex. do todoapp, em que ele usa a Activity para fazer esta injecao
-    CitiesListContract.Presenter mPresenter;
+    private CitiesListContract.Presenter mPresenter;
 
     private CitiesListContract.PermissionChecker mPermissionChecker;
 
@@ -90,25 +80,6 @@ public class CitiesListFragment extends BaseFragment
         if (context instanceof CitiesListContract.PermissionChecker) {
             mPermissionChecker = (CitiesListContract.PermissionChecker) context;
         }
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        // initialize injector
-        mCitiesListComponent = DaggerCitiesListComponent.builder()
-                .applicationComponent(((MvpWeatherApp)(getActivity().getApplication())).getApplicationComponent())
-                .citiesListPresenterModule(new CitiesListPresenterModule(this))
-                .build();
-        mCitiesListComponent.inject(this);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        // just to make sure
-        mCitiesListComponent = null;
     }
 
     @Override
