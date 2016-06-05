@@ -4,8 +4,8 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.EditText;
 
-import com.athila.mvpweather.infrastructure.validator.ValidationException;
-import com.athila.mvpweather.infrastructure.validator.Validator;
+import com.athila.mvpweather.interactor.validator.ValidationException;
+import com.athila.mvpweather.interactor.validator.Validator;
 
 public class ValidatableEditText extends EditText {
 

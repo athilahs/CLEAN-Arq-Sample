@@ -1,39 +1,39 @@
 package com.athila.mvpweather.presentation.forecast;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
 
 import com.athila.mvpweather.data.model.City;
 import com.athila.mvpweather.data.model.Forecast;
-import com.athila.mvpweather.data.repository.city.CityRepository;
-import com.athila.mvpweather.data.repository.forecast.ForecastRepository;
 import com.athila.mvpweather.infrastructure.MvpWeatherLog;
-import com.athila.mvpweather.infrastructure.rx.DefaultSubscriber;
-import com.athila.mvpweather.infrastructure.rx.WWSchedulers;
+import com.athila.mvpweather.interactor.rx.DefaultSubscriber;
+import com.athila.mvpweather.interactor.usecase.city.GetCities;
+import com.athila.mvpweather.interactor.usecase.forecast.GetForecast;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
 import retrofit2.adapter.rxjava.HttpException;
-import rx.Subscription;
 
 /**
  * Created by athila on 14/03/16.
  */
 public class ForecastPresenter implements ForecastContract.Presenter {
 
-    private Subscription mForecastSubscription;
-    private Subscription mCitySubscription;
     private ForecastContract.View mView;
-    private ForecastRepository mForecastRepository;
-    private CityRepository mCityRepository;
+    // TODO: ideally, these objects should reference the interface. Therefore, for the scenarios where the usecase depends
+    // TODO: on a parameter and this parameter changes more frequently than the presenter lifecycle, (like the City parameter
+    // TODO: of the getForecast method, where the parameter can change for this same presenter) we need to create seter method
+    // TODO: on the specific Usecase and, therefore, we can't use the interface.
+    // TODO: GetCities usecase could be referenced as interface.
+    private GetForecast mGetForecast;
+    private GetCities mGetCities;
 
     @Inject
-    ForecastPresenter(@NonNull ForecastContract.View forecastView, @NonNull ForecastRepository forecastRepository, @NonNull CityRepository cityRepository) {
+    ForecastPresenter(@NonNull ForecastContract.View forecastView, @NonNull GetForecast getForecast, @NonNull GetCities getCities) {
         mView = forecastView;
-        mForecastRepository = forecastRepository;
-        mCityRepository = cityRepository;
+        mGetForecast = getForecast;
+        mGetCities = getCities;
     }
 
     @Override
@@ -50,12 +50,14 @@ public class ForecastPresenter implements ForecastContract.Presenter {
     @Override
     public void stop() {
         mView = null;
-        if (mForecastSubscription != null) {
-            mForecastSubscription.unsubscribe();
+        if (mGetForecast != null) {
+            mGetForecast.unsubscribe();
+            mGetForecast = null;
         }
 
-        if (mCitySubscription != null) {
-            mCitySubscription.unsubscribe();
+        if (mGetCities != null) {
+            mGetCities.unsubscribe();
+            mGetCities = null;
         }
     }
 
@@ -65,87 +67,76 @@ public class ForecastPresenter implements ForecastContract.Presenter {
             return;
         }
 
-        mView.showProgress();
-
-        if (mForecastSubscription != null && !mForecastSubscription.isUnsubscribed()) {
-            mForecastSubscription.unsubscribe();
+        if (mGetForecast == null) {
+            mView.handleGenericErrors(new Exception("GetForecast usecase is null. Cannot execute requested operation."));
+            return;
         }
+        mGetForecast.unsubscribe();
 
-        mForecastSubscription = mForecastRepository.getForecast(city.getLatitude(), city.getLongitude())
-                .observeOn(WWSchedulers.getMainScheduler())
-                .subscribeOn(WWSchedulers.getIoScheduler())
-                .subscribe(new DefaultSubscriber<Forecast>() {
-                    @Override
-                    public void onCompleted() {
-                        if (mView != null) {
-                            mView.hideProgress();
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        if (mView != null) {
-                            mView.hideProgress();
-
-                            if (e instanceof HttpException) {
-                                // TODO: translate the Exception to a more view-friendly errorCode?
-                                mView.handleForecastError((HttpException) e);
-                            } else {
-                                mView.handleGenericErrors(e);
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onNext(Forecast forecast) {
-                        if (mView != null) {
-                            mView.setForecast(forecast);
-                        }
-                    }
-                });
+        mView.showProgress();
+        mGetForecast.setCity(city);
+        mGetForecast.execute(new GetForecastSubscriber());
     }
 
-    public void  getCities() {
+    public void getCities() {
         if (mView == null) {
             return;
         }
 
-        // Need loading? I dont think so...
-
-        if (mCitySubscription != null && mCitySubscription.isUnsubscribed()) {
-            mCitySubscription.unsubscribe();
+        if (mGetCities == null) {
+            mView.handleGenericErrors(new Exception("GetCities usecase is null. Cannot execute requested operation."));
+            return;
         }
 
-        mCitySubscription = mCityRepository.getCities()
-                .observeOn(WWSchedulers.getMainScheduler())
-                .subscribeOn(WWSchedulers.getIoScheduler())
-                .subscribe(new DefaultSubscriber<List<City>>() {
-
-                    @Override
-                    public void onError(Throwable e) {
-                        MvpWeatherLog.error("Error on ForecastPresenter: ", e);
-                        mView.handleGetCitiesError();
-                    }
-
-                    @Override
-                    public void onNext(List<City> cities) {
-                        MvpWeatherLog.debug("onNext called in ForecastPresenter with "+cities.size()+" cities");
-                        if (cities.isEmpty()) {
-                            mView.showEmptyView();
-                        } else {
-                            mView.onCitiesLoaded(cities);
-                        }
-                    }
-                });
+        mGetCities.unsubscribe();
+        mGetCities.execute(new GetCitiesSubscriber());
     }
 
-    @VisibleForTesting
-    void setForecastSubscription(Subscription mockSubscription) {
-        mForecastSubscription = mockSubscription;
+    private class GetForecastSubscriber extends DefaultSubscriber<Forecast> {
+        @Override
+        public void onCompleted() {
+            if (mView != null) {
+                mView.hideProgress();
+            }
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            if (mView != null) {
+                mView.hideProgress();
+
+                if (e instanceof HttpException) {
+                    // TODO: translate the Exception to a more view-friendly errorCode?
+                    mView.handleForecastError((HttpException) e);
+                } else {
+                    mView.handleGenericErrors(e);
+                }
+            }
+        }
+
+        @Override
+        public void onNext(Forecast forecast) {
+            if (mView != null) {
+                mView.setForecast(forecast);
+            }
+        }
     }
 
-    @VisibleForTesting
-    void setCitySubscription(Subscription mockSubscription) {
-        mCitySubscription = mockSubscription;
+    private class GetCitiesSubscriber extends DefaultSubscriber<List<City>> {
+        @Override
+        public void onError(Throwable e) {
+            MvpWeatherLog.error("Error on ForecastPresenter: ", e);
+            mView.handleGetCitiesError();
+        }
+
+        @Override
+        public void onNext(List<City> cities) {
+            MvpWeatherLog.debug("onNext called in ForecastPresenter with " + cities.size() + " cities");
+            if (cities.isEmpty()) {
+                mView.showEmptyView();
+            } else {
+                mView.onCitiesLoaded(cities);
+            }
+        }
     }
 }

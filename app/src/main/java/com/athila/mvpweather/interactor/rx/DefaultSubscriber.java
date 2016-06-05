@@ -1,4 +1,4 @@
-package com.athila.mvpweather.infrastructure.rx;
+package com.athila.mvpweather.interactor.rx;
 
 /**
  * Created by athila on 14/03/16.

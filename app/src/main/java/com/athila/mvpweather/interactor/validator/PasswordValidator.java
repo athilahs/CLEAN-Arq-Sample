@@ -1,4 +1,4 @@
-package com.athila.mvpweather.infrastructure.validator;
+package com.athila.mvpweather.interactor.validator;
 
 public class PasswordValidator implements Validator<String> {
 

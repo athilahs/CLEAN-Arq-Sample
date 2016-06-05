@@ -1,4 +1,4 @@
-package com.athila.mvpweather.infrastructure.validator;
+package com.athila.mvpweather.interactor.validator;
 
 /**
  * Created by athila on 10/07/15.

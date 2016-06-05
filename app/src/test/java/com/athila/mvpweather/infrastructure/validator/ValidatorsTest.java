@@ -1,5 +1,9 @@
 package com.athila.mvpweather.infrastructure.validator;
 
+import com.athila.mvpweather.interactor.validator.CoordinateValidator;
+import com.athila.mvpweather.interactor.validator.EmailValidator;
+import com.athila.mvpweather.interactor.validator.PasswordValidator;
+
 import org.junit.Test;
 
 import java.util.regex.Pattern;

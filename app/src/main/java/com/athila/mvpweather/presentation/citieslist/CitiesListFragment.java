@@ -23,9 +23,9 @@ import android.widget.Toast;
 
 import com.athila.mvpweather.R;
 import com.athila.mvpweather.data.model.City;
-import com.athila.mvpweather.infrastructure.validator.CoordinateValidator;
-import com.athila.mvpweather.infrastructure.validator.EmptyValidator;
-import com.athila.mvpweather.infrastructure.validator.ValidationException;
+import com.athila.mvpweather.interactor.validator.CoordinateValidator;
+import com.athila.mvpweather.interactor.validator.EmptyValidator;
+import com.athila.mvpweather.interactor.validator.ValidationException;
 import com.athila.mvpweather.presentation.BaseFragment;
 import com.athila.mvpweather.presentation.customviews.ValidatableEditText;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;

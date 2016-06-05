@@ -1,4 +1,4 @@
-package com.athila.mvpweather.infrastructure.validator;
+package com.athila.mvpweather.interactor.validator;
 
 public class EmptyValidator implements Validator<String> {
 

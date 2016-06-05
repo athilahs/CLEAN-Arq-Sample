@@ -2,9 +2,9 @@ package com.athila.mvpweather.presentation.forecast;
 
 import com.athila.mvpweather.data.model.City;
 import com.athila.mvpweather.data.model.Forecast;
-import com.athila.mvpweather.data.repository.city.CityRepository;
-import com.athila.mvpweather.data.repository.forecast.ForecastRepository;
 import com.athila.mvpweather.infrastructure.JSONMocks;
+import com.athila.mvpweather.interactor.usecase.city.GetCities;
+import com.athila.mvpweather.interactor.usecase.forecast.GetForecast;
 import com.google.gson.Gson;
 
 import org.junit.After;
@@ -18,104 +18,109 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
-import rx.Subscription;
+import rx.Subscriber;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.validateMockitoUsage;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by athila on 18/03/16.
  */
+@SuppressWarnings("unchecked")
 public class ForecastPresenterTest {
 
-    private static final int CITY_REPO_SETUP_FILLED = 1;
-    private static final int CITY_REPO_SETUP_ERROR = 2;
-    private static final int CITY_REPO_SETUP_EMPTY = 3;
+    private static final int SETUP_SUCCESS = 1;
+    private static final int SETUP_ERROR = 2;
+    private static final int SETUP_EMPTY = 3;
 
-    @Mock
-    private ForecastRepository mForecastRepository;
-
-    @Mock
-    private CityRepository mCityRepository;
 
     @Mock
     private ForecastContract.View mView;
 
     private ForecastPresenter mPresenter;
 
-    private City mSuccessCity;
-    private City mErrorCity;
+    @Mock
+    private GetCities mGetCities;
+
+    @Mock
+    private GetForecast mGetForecast;
 
     @Before
     public void setupForecastPresenter() {
         MockitoAnnotations.initMocks(this);
 
-        mPresenter = new ForecastPresenter(mView, mForecastRepository, mCityRepository);
+        // Since the 'execute' methods from UseCases is responsible for subscribing and execute the operation itself,
+        // we cannot let them mocked. So, tell mockito to use the real versions of these methods when they are called
+        doCallRealMethod().when(mGetCities).execute(any(Subscriber.class));
+        doCallRealMethod().when(mGetCities).execute(any(Subscriber.class), any(Observable.Transformer.class));
+
+        doCallRealMethod().when(mGetForecast).execute(any(Subscriber.class));
+        doCallRealMethod().when(mGetForecast).execute(any(Subscriber.class), any(Observable.Transformer.class));
+
+        mPresenter = new ForecastPresenter(mView, mGetForecast, mGetCities);
     }
 
     @Test
-    @SuppressWarnings("unchecked")
+    public void unsubscribeOnDetach() {
+        mPresenter.stop();
+        verify(mGetCities).unsubscribe();
+        verify(mGetForecast).unsubscribe();
+    }
+
+    @Test
     public void getForecastSuccess() {
-        setupForecastRepository();
-        mPresenter.getForecast(mSuccessCity);
+        setupGetForecast(SETUP_SUCCESS);
+        City testCity = new City("Success", 1, 1);
+        mPresenter.getForecast(testCity);
 
         verify(mView).showProgress();
-        verify(mForecastRepository).getForecast(mSuccessCity.getLatitude(), mSuccessCity.getLongitude());
+        verify(mGetForecast).setCity(testCity);
+        verify(mGetForecast).execute(any(Subscriber.class));
         verify(mView).setForecast(any(Forecast.class));
         verify(mView).hideProgress();
     }
 
     @Test
     public void getForecastError() {
-        setupForecastRepository();
-        mPresenter.getForecast(mErrorCity);
+        setupGetForecast(SETUP_ERROR);
+        City testCity = new City("Error", -1, -1);
+        mPresenter.getForecast(testCity);
 
         verify(mView).showProgress();
-        verify(mForecastRepository).getForecast(mErrorCity.getLatitude(), mErrorCity.getLongitude());
+        verify(mGetForecast).setCity(testCity);
+        verify(mGetForecast).execute(any(Subscriber.class));
         verify(mView).handleGenericErrors(any(Exception.class));
         verify(mView).hideProgress();
     }
 
     @Test
-    public void unsubscribeOnDetach() {
-        Subscription mockForecastSubscription = Mockito.mock(Subscription.class);
-        Subscription mockCitySubscription = Mockito.mock(Subscription.class);
-        mPresenter.setForecastSubscription(mockForecastSubscription);
-        mPresenter.setCitySubscription(mockCitySubscription);
-
-        mPresenter.stop();
-        verify(mockForecastSubscription).unsubscribe();
-        verify(mockCitySubscription).unsubscribe();
-    }
-
-    @Test
     public void getCitiesSuccess() {
-        setupCityRepository(CITY_REPO_SETUP_FILLED);
+        setupGetCities(SETUP_SUCCESS);
         mPresenter.getCities();
 
-        verify(mCityRepository).getCities();
+        verify(mGetCities).execute(any(Subscriber.class));
         verify(mView).onCitiesLoaded(anyListOf(City.class));
     }
 
     @Test
     public void getCitiesError() {
-        setupCityRepository(CITY_REPO_SETUP_ERROR);
+        setupGetCities(SETUP_ERROR);
         mPresenter.getCities();
 
-        verify(mCityRepository).getCities();
+        verify(mGetCities).execute(any(Subscriber.class));
         verify(mView).handleGetCitiesError();
     }
 
     @Test
     public void getCitiesEmpty() {
-        setupCityRepository(CITY_REPO_SETUP_EMPTY);
+        setupGetCities(SETUP_EMPTY);
         mPresenter.getCities();
 
-        verify(mCityRepository).getCities();
-        // Empty cities is seen as error, since database is pre-populated with some cities
+        verify(mGetCities).execute(any(Subscriber.class));
         verify(mView).showEmptyView();
     }
 
@@ -124,22 +129,23 @@ public class ForecastPresenterTest {
         validateMockitoUsage();
     }
 
-    private void setupForecastRepository() {
-        mSuccessCity = new City("Success", 1, 1);
-        mErrorCity = new City("Error", -1, -1);
-
-        when(mForecastRepository.getForecast(mSuccessCity.getLatitude(), mSuccessCity.getLongitude()))
-                // Attention: JSONMocks is available only on mock flavor. Do not try to execute unit tests on other flavors
-                .thenReturn(Observable.just(new Gson().fromJson(JSONMocks.FORECAST_SUCCESS, Forecast.class)));
-
-        // sending a generic error since HttpException from Retrofit is final and cannot be mocked
-        Observable<Forecast> error = Observable.error(Mockito.mock(Exception.class));
-        when(mForecastRepository.getForecast(mErrorCity.getLatitude(), mErrorCity.getLongitude())).thenReturn(error);
+    private void setupGetForecast(int setup) {
+        switch(setup) {
+            case SETUP_SUCCESS:
+                doReturn(Observable.just(new Gson().fromJson(JSONMocks.FORECAST_SUCCESS, Forecast.class)))
+                        .when(mGetForecast)
+                        .buildUseCaseObservable();
+                break;
+            case SETUP_ERROR:
+                Observable<Forecast> error = Observable.error(Mockito.mock(Exception.class));
+                doReturn(error).when(mGetForecast).buildUseCaseObservable();
+                break;
+        }
     }
 
-    private void setupCityRepository(int setup) {
+    private void setupGetCities(int setup) {
         switch (setup) {
-            case CITY_REPO_SETUP_FILLED:
+            case SETUP_SUCCESS:
                 List<City> mockedCities = new ArrayList<>();
                 mockedCities.add(new City("MockCity 1", -123, 123));
                 mockedCities.add(new City("MockCity 2", -124, 123));
@@ -147,19 +153,24 @@ public class ForecastPresenterTest {
                 mockedCities.add(new City("MockCity 4", -125, 123));
                 mockedCities.add(new City("MockCity 5", -123, 125));
 
-                when(mCityRepository.getCities()).thenReturn(Observable.just(mockedCities));
+                // Use this syntax to avoid the real buildUseCaseObservable being called once resulting in NPE
+                // (since it will call the real implementation, which could try to access a null member variable)
+                doReturn(Observable.just(mockedCities)).when(mGetCities).buildUseCaseObservable();
                 break;
 
-            case CITY_REPO_SETUP_EMPTY:
+            case SETUP_EMPTY:
                 List<City> empty = new ArrayList<>();
-                when(mCityRepository.getCities()).thenReturn(Observable.just(empty));
+                // Use this syntax to avoid the real buildUseCaseObservable being called once resulting in NPE
+                // (since it will call the real implementation, which could try to access a null member variable)
+                doReturn(Observable.just(empty)).when(mGetCities).buildUseCaseObservable();
                 break;
 
-            case CITY_REPO_SETUP_ERROR:
-            default:
-                Observable<List<City>> error = Observable.error(Mockito.mock(Throwable.class));
-                when(mCityRepository.getCities()).thenReturn(error);
+            case SETUP_ERROR:
+                Observable<List<City>> getCitiesError = Observable.error(Mockito.mock(Throwable.class));
+                // Use this syntax to avoid the real buildUseCaseObservable being called once resulting in NPE
+                // (since it will call the real implementation, which could try to access a null member variable)
+                doReturn(getCitiesError).when(mGetCities).buildUseCaseObservable();
+                break;
         }
-
     }
 }

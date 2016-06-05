@@ -8,7 +8,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
 import com.athila.mvpweather.R;
-import com.athila.mvpweather.infrastructure.validator.ValidationException;
+import com.athila.mvpweather.interactor.validator.ValidationException;
 
 /**
  * Created by athila on 10/03/16.

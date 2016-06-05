@@ -10,6 +10,8 @@ buildscript {
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+
+        classpath "com.fernandocejas.frodo:frodo-plugin:0.8.3"
     }
 }
 
@@ -44,4 +46,5 @@ ext {
     storIOVersion = '1.8.0'
     googlePlayServicesVersion = '8.4.0'
     dagger2Version = '2.1'
+    runnerVersion = '0.4.1'
 }
