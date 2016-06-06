@@ -7,7 +7,7 @@ import com.athila.cleansample.data.model.City;
 import com.athila.cleansample.data.model.CityStorIOSQLiteDeleteResolver;
 import com.athila.cleansample.data.model.CityStorIOSQLiteGetResolver;
 import com.athila.cleansample.data.model.CityStorIOSQLitePutResolver;
-import com.athila.cleansample.infrastructure.MvpWeatherApp;
+import com.athila.cleansample.infrastructure.CleanSampleApp;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.impl.DefaultStorIOSQLite;
@@ -25,7 +25,7 @@ import dagger.Provides;
 public class DatabaseModule {
     @Provides
     @Singleton
-    SQLiteOpenHelper provideSQLiteOpenHelper(MvpWeatherApp context) {
+    SQLiteOpenHelper provideSQLiteOpenHelper(CleanSampleApp context) {
         return new Database(context);
     }
 

@@ -22,14 +22,14 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix ".debug"
-            buildConfigField("int", "LOG_LEVEL", "4") // MvpWeatherLog.LOG_LEVEL_DEBUG = 4;
+            buildConfigField("int", "LOG_LEVEL", "4") // CleanSampleLog.LOG_LEVEL_DEBUG = 4;
         }
 
         stage {
             initWith(buildTypes.debug)
 
             applicationIdSuffix ".stage"
-            buildConfigField("int", "LOG_LEVEL", "2") // MvpWeatherLog.LOG_LEVEL_WARN = 2;
+            buildConfigField("int", "LOG_LEVEL", "2") // CleanSampleLog.LOG_LEVEL_WARN = 2;
             // Set base URL for stage builds
             // buildConfigField("String", "HOST", "\"<stage_base_url>\"")
         }
@@ -38,7 +38,7 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
-            buildConfigField("int", "LOG_LEVEL", "0") // MvpWeatherLog.LOG_LEVEL_NONE = 0;
+            buildConfigField("int", "LOG_LEVEL", "0") // CleanSampleLog.LOG_LEVEL_NONE = 0;
             // Set base URL for production builds
             // buildConfigField("String", "HOST", "\"<production_base_url>\"")
         }

@@ -7,7 +7,7 @@ import com.athila.cleansample.BuildConfig;
 
 
 @SuppressWarnings({"PointlessBooleanExpression", "ConstantConditions"})
-public class MvpWeatherLog {
+public class CleanSampleLog {
 
     private static final String DEFAULT_TAG = "MVPWheather";
 
@@ -17,7 +17,7 @@ public class MvpWeatherLog {
     private static final int LOG_LEVEL_WARN = 2;
     private static final int LOG_LEVEL_ERROR = 1;
 
-    private MvpWeatherLog() {
+    private CleanSampleLog() {
         // just to disable default constructor
     }
 

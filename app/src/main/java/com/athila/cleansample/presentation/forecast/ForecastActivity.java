@@ -8,7 +8,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,7 +20,8 @@ import com.athila.cleansample.data.model.City;
 import com.athila.cleansample.di.component.DaggerForecastComponent;
 import com.athila.cleansample.di.component.ForecastComponent;
 import com.athila.cleansample.di.module.presentation.ForecastPresenterModule;
-import com.athila.cleansample.infrastructure.MvpWeatherApp;
+import com.athila.cleansample.infrastructure.CleanSampleApp;
+import com.athila.cleansample.presentation.BaseActivity;
 import com.athila.cleansample.presentation.citieslist.CitiesListActivity;
 
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class ForecastActivity extends AppCompatActivity implements
+public class ForecastActivity extends BaseActivity implements
         NavigationView.OnNavigationItemSelectedListener,
         ForecastContract.OnProgressRequestListener,
         ForecastContract.OnCitiesLoadedListener {
@@ -87,8 +87,6 @@ public class ForecastActivity extends AppCompatActivity implements
     protected void onDestroy() {
         super.onDestroy();
         mForecastComponent = null;
-
-        
     }
 
     @Override
@@ -101,7 +99,7 @@ public class ForecastActivity extends AppCompatActivity implements
     private void initializeInjector(ForecastContract.View forecastView) {
         // initialize injector
         mForecastComponent = DaggerForecastComponent.builder()
-                .applicationComponent(((MvpWeatherApp)(getApplication())).getApplicationComponent())
+                .applicationComponent(((CleanSampleApp)(getApplication())).getApplicationComponent())
                 .forecastPresenterModule(new ForecastPresenterModule(forecastView))
                 .build();
         mForecastComponent.inject(this);

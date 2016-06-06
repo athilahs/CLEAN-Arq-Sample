@@ -7,7 +7,7 @@ import com.athila.cleansample.di.module.DatabaseModule;
 import com.athila.cleansample.di.module.NetworkModule;
 import com.athila.cleansample.di.module.repository.CityRepositoryModule;
 import com.athila.cleansample.di.module.repository.ForecastRepositoryModule;
-import com.athila.cleansample.infrastructure.MvpWeatherApp;
+import com.athila.cleansample.infrastructure.CleanSampleApp;
 
 import javax.inject.Singleton;
 
@@ -28,7 +28,7 @@ import dagger.Component;
 public interface ApplicationComponent {
     // expose to sub graphs
 
-    MvpWeatherApp application();
+    CleanSampleApp application();
 
     // Repositories
     CityRepository cityRepository();

@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.athila.cleansample.data.model.City;
 import com.athila.cleansample.data.model.Forecast;
-import com.athila.cleansample.infrastructure.MvpWeatherLog;
+import com.athila.cleansample.infrastructure.CleanSampleLog;
 import com.athila.cleansample.interactor.rx.DefaultSubscriber;
 import com.athila.cleansample.interactor.usecase.city.GetCities;
 import com.athila.cleansample.interactor.usecase.forecast.GetForecast;
@@ -125,13 +125,13 @@ public class ForecastPresenter implements ForecastContract.Presenter {
     private class GetCitiesSubscriber extends DefaultSubscriber<List<City>> {
         @Override
         public void onError(Throwable e) {
-            MvpWeatherLog.error("Error on ForecastPresenter: ", e);
+            CleanSampleLog.error("Error on ForecastPresenter: ", e);
             mView.handleGetCitiesError();
         }
 
         @Override
         public void onNext(List<City> cities) {
-            MvpWeatherLog.debug("onNext called in ForecastPresenter with " + cities.size() + " cities");
+            CleanSampleLog.debug("onNext called in ForecastPresenter with " + cities.size() + " cities");
             if (cities.isEmpty()) {
                 mView.showEmptyView();
             } else {

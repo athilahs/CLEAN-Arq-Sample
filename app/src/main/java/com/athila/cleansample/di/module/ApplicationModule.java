@@ -15,7 +15,7 @@
  */
 package com.athila.cleansample.di.module;
 
-import com.athila.cleansample.infrastructure.MvpWeatherApp;
+import com.athila.cleansample.infrastructure.CleanSampleApp;
 
 import javax.inject.Singleton;
 
@@ -27,15 +27,15 @@ import dagger.Provides;
  */
 @Module
 public class ApplicationModule {
-  private final MvpWeatherApp mApplication;
+  private final CleanSampleApp mApplication;
 
-  public ApplicationModule(MvpWeatherApp application) {
+  public ApplicationModule(CleanSampleApp application) {
     mApplication = application;
   }
 
   @Provides
   @Singleton
-  MvpWeatherApp provideApplication() {
+  CleanSampleApp provideApplication() {
     return mApplication;
   }
 }

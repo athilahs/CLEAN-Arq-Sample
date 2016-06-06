@@ -1,7 +1,7 @@
 package com.athila.cleansample.presentation.citieslist;
 
 import com.athila.cleansample.data.model.City;
-import com.athila.cleansample.infrastructure.MvpWeatherLog;
+import com.athila.cleansample.infrastructure.CleanSampleLog;
 import com.athila.cleansample.interactor.rx.DefaultSubscriber;
 import com.athila.cleansample.interactor.usecase.city.AddCities;
 import com.athila.cleansample.interactor.usecase.city.DeleteCities;
@@ -43,7 +43,7 @@ public class CitiesListPresenter implements CitiesListContract.Presenter {
 
     @Override
     public void stop() {
-        MvpWeatherLog.debug("CitiesListPresenter::stop");
+        CleanSampleLog.debug("CitiesListPresenter::stop");
         mView = null;
         if (mGetCities != null) {
             mGetCities.unsubscribe();
@@ -144,7 +144,7 @@ public class CitiesListPresenter implements CitiesListContract.Presenter {
     private class GetCitiesSubscriber extends DefaultSubscriber<List<City>> {
         @Override
         public void onError(Throwable e) {
-            MvpWeatherLog.error("Error on CitiesListPresenter::getCities: ", e);
+            CleanSampleLog.error("Error on CitiesListPresenter::getCities: ", e);
             if (mView != null) {
                 mView.handleGenericErrors(e);
             }
@@ -152,7 +152,7 @@ public class CitiesListPresenter implements CitiesListContract.Presenter {
 
         @Override
         public void onNext(List<City> cities) {
-            MvpWeatherLog.debug("onNext called in CitiesListPresenter with "+cities.size()+" cities");
+            CleanSampleLog.debug("onNext called in CitiesListPresenter with "+cities.size()+" cities");
             if (mView != null) {
                 if (cities.isEmpty()) {
                     mView.showEmptyView();
@@ -176,7 +176,7 @@ public class CitiesListPresenter implements CitiesListContract.Presenter {
         }
         @Override
         public void onError(Throwable e) {
-            MvpWeatherLog.error("Error on CitiesListPresenter::updateCity: ", e);
+            CleanSampleLog.error("Error on CitiesListPresenter::updateCity: ", e);
             if (mView != null) {
                 mView.handleGenericErrors(e);
             }
@@ -184,7 +184,7 @@ public class CitiesListPresenter implements CitiesListContract.Presenter {
 
         @Override
         public void onNext(PutResult result) {
-            MvpWeatherLog.debug("onNext called on CitiesListPresenter::updateCity. city: "+mUpdatedCity.getName());
+            CleanSampleLog.debug("onNext called on CitiesListPresenter::updateCity. city: "+mUpdatedCity.getName());
             if (mView != null && result.wasUpdated()) {
                 mView.onCityEditionFinished(mUpdatedCity);
             }
@@ -194,7 +194,7 @@ public class CitiesListPresenter implements CitiesListContract.Presenter {
     private class DeleteCitiesSubscriber extends DefaultSubscriber<DeleteResults<City>> {
         @Override
         public void onError(Throwable e) {
-            MvpWeatherLog.error("Error on CitiesListPresenter::deleteCities: ", e);
+            CleanSampleLog.error("Error on CitiesListPresenter::deleteCities: ", e);
             if (mView != null) {
                 mView.handleGenericErrors(e);
             }
@@ -202,7 +202,7 @@ public class CitiesListPresenter implements CitiesListContract.Presenter {
 
         @Override
         public void onNext(DeleteResults<City> result) {
-            MvpWeatherLog.debug("onNext called on CitiesListPresenter::deleteCities.");
+            CleanSampleLog.debug("onNext called on CitiesListPresenter::deleteCities.");
             if (mView != null) {
                 mView.onCitiesDeleted(result.results().size());
             }
@@ -218,7 +218,7 @@ public class CitiesListPresenter implements CitiesListContract.Presenter {
 
         @Override
         public void onError(Throwable e) {
-            MvpWeatherLog.error("Error on CitiesListPresenter::addCity: ", e);
+            CleanSampleLog.error("Error on CitiesListPresenter::addCity: ", e);
             if (mView != null) {
                 mView.handleGenericErrors(e);
             }
@@ -226,7 +226,7 @@ public class CitiesListPresenter implements CitiesListContract.Presenter {
 
         @Override
         public void onNext(PutResults<City> result) {
-            MvpWeatherLog.debug("onNext called on CitiesListPresenter::addCity. city: "+mCityToAdd.getName());
+            CleanSampleLog.debug("onNext called on CitiesListPresenter::addCity. city: "+mCityToAdd.getName());
             if (mView != null) {
                 mView.onCityAdded(mCityToAdd);
             }

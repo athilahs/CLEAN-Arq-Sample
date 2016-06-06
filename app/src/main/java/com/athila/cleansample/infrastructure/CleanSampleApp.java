@@ -12,7 +12,7 @@ import com.athila.cleansample.di.module.NetworkModule;
  * Created by athila on 30/05/16.
  */
 
-public class MvpWeatherApp extends Application {
+public class CleanSampleApp extends Application {
 
     private ApplicationComponent mApplicationComponent;
 

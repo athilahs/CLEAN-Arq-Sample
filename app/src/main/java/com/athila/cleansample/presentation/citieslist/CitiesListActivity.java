@@ -9,7 +9,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
@@ -17,7 +16,8 @@ import com.athila.cleansample.R;
 import com.athila.cleansample.di.component.CitiesListComponent;
 import com.athila.cleansample.di.component.DaggerCitiesListComponent;
 import com.athila.cleansample.di.module.presentation.CitiesListPresenterModule;
-import com.athila.cleansample.infrastructure.MvpWeatherApp;
+import com.athila.cleansample.infrastructure.CleanSampleApp;
+import com.athila.cleansample.presentation.BaseActivity;
 
 import javax.inject.Inject;
 
@@ -25,7 +25,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 
-public class CitiesListActivity extends AppCompatActivity implements CitiesListContract.PermissionChecker {
+public class CitiesListActivity extends BaseActivity implements CitiesListContract.PermissionChecker {
 
     private static final int PERMISSIONS_REQUEST_FINE_LOCATION = 1;
 
@@ -73,7 +73,7 @@ public class CitiesListActivity extends AppCompatActivity implements CitiesListC
     private void initializeInjector(CitiesListContract.View citiesListView) {
         // initialize injector
         mCitiesListComponent = DaggerCitiesListComponent.builder()
-                .applicationComponent(((MvpWeatherApp)(getApplication())).getApplicationComponent())
+                .applicationComponent(((CleanSampleApp)(getApplication())).getApplicationComponent())
                 .citiesListPresenterModule(new CitiesListPresenterModule(citiesListView))
                 .build();
         mCitiesListComponent.inject(this);

@@ -3,6 +3,7 @@ package com.athila.cleansample.di.module;
 import com.athila.cleansample.data.datasource.api.ApiConstants;
 import com.athila.cleansample.data.datasource.api.ForecastApi;
 import com.athila.cleansample.data.datasource.api.interceptors.BasicHeadersInterceptor;
+import com.athila.cleansample.di.AnotherHostBaseUrl;
 
 import javax.inject.Singleton;
 
@@ -36,27 +37,25 @@ public class NetworkModule {
     @Provides
     @Singleton
     Retrofit provideDefaultRetrofit(OkHttpClient okHttpClient) {
-        Retrofit retrofit = new Retrofit.Builder()
+        return new Retrofit.Builder()
                 .baseUrl(ApiConstants.API_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .client(okHttpClient)
                 .build();
-
-        return retrofit;
     }
 
-//    @Provides
-//    @Singleton
-//    @AnotherHostBaseUrl
-//    Retrofit provideAnotherHostRetrofit(OkHttpClient okHttpClient) {
-//        return new Retrofit.Builder()
-//                .baseUrl(ApiConstants.API_ANOTHER_HOST_URL)
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-//                .client(okHttpClient)
-//                .build();
-//    }
+    @Provides
+    @Singleton
+    @AnotherHostBaseUrl
+    Retrofit provideAnotherHostRetrofit(OkHttpClient okHttpClient) {
+        return new Retrofit.Builder()
+                .baseUrl(ApiConstants.API_ANOTHER_HOST_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .client(okHttpClient)
+                .build();
+    }
 
     @Provides
     @Singleton
