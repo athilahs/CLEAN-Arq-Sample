@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.athila.mvpweather.presentation.customviews.ShakerEditText
+        <com.athila.cleansample.presentation.customviews.ShakerEditText
             android:id="@+id/dialog_addCity_editText_city_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -27,7 +27,7 @@
         android:layout_marginTop="10dp"
         android:orientation="horizontal">
 
-        <com.athila.mvpweather.presentation.customviews.ShakerEditText
+        <com.athila.cleansample.presentation.customviews.ShakerEditText
             android:id="@+id/dialog_addCity_editText_city_latitude"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -38,7 +38,7 @@
             android:singleLine="true"
             app:errorMessage="@string/error_validation_invalid_coordinate_field"/>
 
-        <com.athila.mvpweather.presentation.customviews.ShakerEditText
+        <com.athila.cleansample.presentation.customviews.ShakerEditText
             android:id="@+id/dialog_addCity_editText_city_longitude"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

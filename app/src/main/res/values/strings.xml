@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MVP Weather</string>
+    <string name="app_name">CLEAN Weather</string>
 
     <string name="error_no_internet_connection">No internet connection.</string>
     <string name="error_generic">An unexpected error has occurred. Please, try again later.</string>

@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
-      tools:context="com.athila.mvpweather.presentation.citieslist.CitiesListActivity">
+      tools:context="com.athila.cleansample.presentation.citieslist.CitiesListActivity">
 
     <item
         android:id="@+id/menu_cities_edit"

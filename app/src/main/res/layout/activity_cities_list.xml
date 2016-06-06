@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.athila.mvpweather.presentation.citieslist.CitiesListActivity">
+    tools:context="com.athila.cleansample.presentation.citieslist.CitiesListActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -30,7 +30,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <fragment android:id="@+id/fragment_cities_list"
-                  android:name="com.athila.mvpweather.presentation.citieslist.CitiesListFragment"
+                  android:name="com.athila.cleansample.presentation.citieslist.CitiesListFragment"
                   xmlns:android="http://schemas.android.com/apk/res/android"
                   xmlns:app="http://schemas.android.com/apk/res-auto"
                   xmlns:tools="http://schemas.android.com/tools"

@@ -7,7 +7,7 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
-        applicationId "com.athila.mvpweather"
+        applicationId "com.athila.cleansample"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -17,16 +17,6 @@ android {
 
         // For vector drawables in support library
         vectorDrawables.useSupportLibrary = true
-    }
-
-    signingConfigs {
-        release {
-            // TODO: in a real project, store this in system variables
-            keyAlias 'MttWheatherKey'
-            keyPassword 'XVE2sUCyak9J8CRf'
-            storeFile file("../cert/mvpwheather.jks")
-            storePassword 'T9cLcnNY9PDehEHa'
-        }
     }
 
     buildTypes {
@@ -45,9 +35,8 @@ android {
         }
 
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
 
             buildConfigField("int", "LOG_LEVEL", "0") // MvpWeatherLog.LOG_LEVEL_NONE = 0;
             // Set base URL for production builds
@@ -76,18 +65,42 @@ android {
     }
 }
 
+// Loop variants
+android.variantFilter { variant ->
+    // Loop flavors
+    variant.getFlavors().each { flavor ->
+        println variant.buildType.name + " " + flavor.name + " "
+        // For mock flavor, only debug builds are available
+        if (flavor.name.equals('mock')) {
+            if (variant.buildType.name.equals('stage')
+            || variant.buildType.name.equals('release')) {
+                variant.setIgnore(true)
+            }
+        }
+    }
+}
+
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Google stuffs
     compile "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
     compile "com.android.support:support-v4:$rootProject.supportLibraryVersion"
     compile "com.android.support:design:$rootProject.supportLibraryVersion"
     compile "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
     compile "com.google.android.gms:play-services-location:$rootProject.googlePlayServicesVersion"
+
+    // ButterKnife
     compile "com.jakewharton:butterknife:$rootProject.butterKnifeVersion"
+
+    // Retrofit
     compile "com.squareup.retrofit2:retrofit:$rootProject.retrofitVersion"
     compile "com.squareup.retrofit2:converter-gson:$rootProject.retrofitVersion"
     compile "com.squareup.okhttp3:logging-interceptor:$rootProject.retrofitLoggingInterceptorVersion"
     compile "com.squareup.retrofit2:adapter-rxjava:$retrofitVersion"
+
+    // Rx
     compile "io.reactivex:rxandroid:$rootProject.rxAndroidVersion"
     compile "io.reactivex:rxjava:$rootProject.rxAndroidVersion"
 
@@ -101,7 +114,7 @@ dependencies {
     compile "com.google.dagger:dagger:$rootProject.dagger2Version"
     provided "javax.annotation:jsr250-api:1.0"
 
-    // Dependencies for local unit tests
+    // Unit tests
     testCompile "junit:junit:$rootProject.junitVersion"
     testCompile "org.mockito:mockito-all:$rootProject.mockitoVersion"
     testCompile "org.powermock:powermock-module-junit4:$rootProject.powerMockitoVersion"
@@ -111,9 +124,8 @@ dependencies {
     androidTestCompile "com.android.support.test:runner:$rootProject.runnerVersion"
     androidTestCompile "com.android.support.test:rules:$rootProject.runnerVersion"
 
-    // Dependencies for Android unit tests
+    // Dependencies for Android Testing
     androidTestCompile "junit:junit:$rootProject.junitVersion"
-    androidTestCompile "org.mockito:mockito-core:$rootProject.mockitoVersion"
     androidTestCompile "org.mockito:mockito-all:$rootProject.mockitoVersion"
     androidTestCompile "org.powermock:powermock-module-junit4:$rootProject.powerMockitoVersion"
     androidTestCompile "org.powermock:powermock-api-mockito:$rootProject.powerMockitoVersion"
