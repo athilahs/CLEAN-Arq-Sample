@@ -60,6 +60,7 @@ android {
         abortOnError false
     }
 
+    // This is necessary to avoid RuntimeExceptions when unit testing classes containing Log instructions, for instance
     testOptions {
         unitTests.returnDefaultValues = true
     }
