@@ -96,4 +96,14 @@ public class City {
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "City{" +
+                "mUUID='" + mUUID + '\'' +
+                ", mName='" + mName + '\'' +
+                ", mLatitude=" + mLatitude +
+                ", mLongitude=" + mLongitude +
+                "}\n";
+    }
 }

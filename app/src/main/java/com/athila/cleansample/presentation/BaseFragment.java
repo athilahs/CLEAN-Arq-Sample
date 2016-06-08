@@ -20,7 +20,7 @@ public abstract class BaseFragment extends Fragment {
             return false;
         }
 
-        Snackbar errorMessage = Snackbar.make(getView(), R.string.error_generic, Snackbar.LENGTH_LONG);
+        Snackbar errorMessage = Snackbar.make(view, R.string.error_generic, Snackbar.LENGTH_LONG);
         if (error instanceof UnknownHostException) {
             errorMessage.setText(R.string.error_no_internet_connection);
         }

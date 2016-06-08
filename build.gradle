@@ -47,4 +47,5 @@ ext {
     googlePlayServicesVersion = '8.4.0'
     dagger2Version = '2.1'
     runnerVersion = '0.4.1'
+    robolectricVersion = '3.0'
 }

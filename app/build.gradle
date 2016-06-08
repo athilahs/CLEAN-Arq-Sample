@@ -120,6 +120,7 @@ dependencies {
     testCompile "org.mockito:mockito-all:$rootProject.mockitoVersion"
     testCompile "org.powermock:powermock-module-junit4:$rootProject.powerMockitoVersion"
     testCompile "org.powermock:powermock-api-mockito:$rootProject.powerMockitoVersion"
+    testCompile "org.robolectric:robolectric:$rootProject.robolectricVersion"
 
     // Android Testing Support Library's runner and rules
     androidTestCompile "com.android.support.test:runner:$rootProject.runnerVersion"

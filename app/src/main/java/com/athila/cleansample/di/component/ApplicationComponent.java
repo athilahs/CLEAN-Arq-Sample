@@ -8,6 +8,7 @@ import com.athila.cleansample.di.module.NetworkModule;
 import com.athila.cleansample.di.module.repository.CityRepositoryModule;
 import com.athila.cleansample.di.module.repository.ForecastRepositoryModule;
 import com.athila.cleansample.infrastructure.CleanSampleApp;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 
 import javax.inject.Singleton;
 
@@ -33,4 +34,7 @@ public interface ApplicationComponent {
     // Repositories
     CityRepository cityRepository();
     ForecastRepository forecastRepository();
+
+    // Datasources for tests
+    StorIOSQLite storIO();
 }

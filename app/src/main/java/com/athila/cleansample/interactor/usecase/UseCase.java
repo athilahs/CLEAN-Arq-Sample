@@ -63,9 +63,11 @@ public abstract class UseCase {
      */
     @SuppressWarnings("unchecked")
     public void execute(@NonNull Subscriber useCaseSubscriber, Observable.Transformer transformer) {
-        mSubscription = buildUseCaseObservable()
-                .compose(transformer)
-                .subscribe(useCaseSubscriber);
+        Observable observable = buildUseCaseObservable();
+        if (transformer != null) {
+            observable.compose(transformer);
+        }
+        observable.subscribe(useCaseSubscriber);
     }
 
     /**

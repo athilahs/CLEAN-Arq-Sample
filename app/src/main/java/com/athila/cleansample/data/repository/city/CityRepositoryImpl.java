@@ -41,28 +41,28 @@ public class CityRepositoryImpl implements CityRepository {
 
     @Override
     public Observable<PutResults<City>> insertCities(List<City> cities) {
-        return Observable.just(mStorIOSQLite
+        return mStorIOSQLite
                 .put()
                 .objects(cities)
                 .prepare()
-                .executeAsBlocking()); // this observable does not need to know about updates
+                .asRxObservable();
     }
 
     @Override
     public Observable<PutResult> updateCity(City city) {
-        return Observable.just(mStorIOSQLite
+        return mStorIOSQLite
                 .put()
                 .object(city)
                 .prepare()
-                .executeAsBlocking());
+                .asRxObservable();
     }
 
     @Override
     public Observable<DeleteResults<City>> deleteCities(List<City> cities) {
-        return Observable.just(mStorIOSQLite
+        return mStorIOSQLite
                 .delete()
                 .objects(cities)
                 .prepare()
-                .executeAsBlocking());
+                .asRxObservable();
     }
 }
