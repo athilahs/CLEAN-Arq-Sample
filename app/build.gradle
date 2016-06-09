@@ -17,12 +17,17 @@ android {
 
         // For vector drawables in support library
         vectorDrawables.useSupportLibrary = true
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         debug {
             applicationIdSuffix ".debug"
             buildConfigField("int", "LOG_LEVEL", "4") // CleanSampleLog.LOG_LEVEL_DEBUG = 4;
+
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
         stage {
@@ -132,4 +137,5 @@ dependencies {
     androidTestCompile "org.powermock:powermock-module-junit4:$rootProject.powerMockitoVersion"
     androidTestCompile "org.powermock:powermock-api-mockito:$rootProject.powerMockitoVersion"
     androidTestCompile "com.android.support:support-annotations:$rootProject.supportLibraryVersion"
+    androidTestCompile "com.android.support.test.espresso:espresso-core:$rootProject.espressoVersion"
 }

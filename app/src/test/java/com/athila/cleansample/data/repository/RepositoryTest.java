@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by athila on 07/06/16.
  */
-
+@SuppressWarnings("unchecked")
 public class RepositoryTest {
 
     @Mock

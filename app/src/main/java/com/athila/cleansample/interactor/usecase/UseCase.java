@@ -59,15 +59,23 @@ public abstract class UseCase {
      *
      * @param useCaseSubscriber subscriber which will listen for results delivered by the Obsevable built
      *                          with {@link #buildUseCaseObservable()}.
-     * @param transformer the transformer to be applied on built observable. It can be to select execution / delivery thread
+     * @param transformer       the transformer to be applied on built observable. It can be to select execution / delivery thread
      */
     @SuppressWarnings("unchecked")
     public void execute(@NonNull Subscriber useCaseSubscriber, Observable.Transformer transformer) {
-        Observable observable = buildUseCaseObservable();
+        // Need to use the calling chain. It does not work if we break the chain like:
+        // Observable o = buildUseCaseObservable();
+        // if (transformer != null) {
+        //      o.compose(transformer)
+        // }
         if (transformer != null) {
-            observable.compose(transformer);
+            mSubscription = buildUseCaseObservable()
+                    .compose(transformer)
+                    .subscribe(useCaseSubscriber);
+        } else {
+            mSubscription = buildUseCaseObservable()
+                    .subscribe(useCaseSubscriber);
         }
-        observable.subscribe(useCaseSubscriber);
     }
 
     /**
