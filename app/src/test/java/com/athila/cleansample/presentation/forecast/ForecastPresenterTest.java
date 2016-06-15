@@ -2,10 +2,8 @@ package com.athila.cleansample.presentation.forecast;
 
 import com.athila.cleansample.data.model.City;
 import com.athila.cleansample.data.model.Forecast;
-import com.athila.cleansample.infrastructure.JSONMocks;
 import com.athila.cleansample.interactor.usecase.city.GetCities;
 import com.athila.cleansample.interactor.usecase.forecast.GetForecast;
-import com.google.gson.Gson;
 
 import org.junit.After;
 import org.junit.Before;
@@ -24,6 +22,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.validateMockitoUsage;
 import static org.mockito.Mockito.verify;
 
@@ -132,7 +131,7 @@ public class ForecastPresenterTest {
     private void setupGetForecast(int setup) {
         switch(setup) {
             case SETUP_SUCCESS:
-                doReturn(Observable.just(new Gson().fromJson(JSONMocks.FORECAST_SUCCESS, Forecast.class)))
+                doReturn(Observable.just(mock(Forecast.class)))
                         .when(mGetForecast)
                         .buildUseCaseObservable();
                 break;

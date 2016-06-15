@@ -136,6 +136,10 @@ dependencies {
     androidTestCompile "org.mockito:mockito-all:$rootProject.mockitoVersion"
     androidTestCompile "org.powermock:powermock-module-junit4:$rootProject.powerMockitoVersion"
     androidTestCompile "org.powermock:powermock-api-mockito:$rootProject.powerMockitoVersion"
-    androidTestCompile "com.android.support:support-annotations:$rootProject.supportLibraryVersion"
     androidTestCompile "com.android.support.test.espresso:espresso-core:$rootProject.espressoVersion"
+    // Used only on mock flavor
+    mockCompile "com.squareup.retrofit2:retrofit-mock:$rootProject.retrofitVersion"
+
+    // Resolve conflicts between main and test APK:
+    androidTestCompile "com.android.support:support-annotations:$rootProject.supportLibraryVersion"
 }
