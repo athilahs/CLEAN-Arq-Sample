@@ -60,7 +60,8 @@ public class ForecastPresenterTest {
         doCallRealMethod().when(mGetForecast).execute(any(Subscriber.class));
         doCallRealMethod().when(mGetForecast).execute(any(Subscriber.class), any(Observable.Transformer.class));
 
-        mPresenter = new ForecastPresenter(mView, mGetForecast, mGetCities);
+        // Necessary spy in order to test superclass method invocation (like handleBasicError)
+        mPresenter = Mockito.spy(new ForecastPresenter(mView, mGetForecast, mGetCities));
     }
 
     @Test
@@ -92,7 +93,7 @@ public class ForecastPresenterTest {
         verify(mView).showProgress();
         verify(mGetForecast).setCity(testCity);
         verify(mGetForecast).execute(any(Subscriber.class));
-        verify(mView).handleGenericErrors(any(Exception.class));
+        verify(mPresenter).handleBasicError(any(ForecastContract.View.class), any(Exception.class));
         verify(mView).hideProgress();
     }
 

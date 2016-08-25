@@ -188,10 +188,4 @@ public class ForecastFragment extends BaseFragment implements ForecastContract.V
             activity.finish();
         }
     }
-
-    @Override
-    public void handleGenericErrors(Throwable error) {
-        // from superclass
-        handleBasicErrors(error);
-    }
 }

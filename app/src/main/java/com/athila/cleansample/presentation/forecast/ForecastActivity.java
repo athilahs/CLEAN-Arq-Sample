@@ -92,7 +92,7 @@ public class ForecastActivity extends BaseActivity implements
     @Override
     public void onAttachFragment(Fragment fragment) {
         if (fragment instanceof ForecastContract.View) {
-            initializeInjector((ForecastContract.View)fragment);
+            initializeInjector((ForecastContract.View) fragment);
         }
     }
 

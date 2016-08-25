@@ -18,7 +18,6 @@ package com.athila.cleansample.interactor.usecase.forecast;
 import com.athila.cleansample.data.model.City;
 import com.athila.cleansample.data.repository.forecast.ForecastRepository;
 import com.athila.cleansample.interactor.usecase.UseCase;
-import com.fernandocejas.frodo.annotation.RxLogObservable;
 
 import javax.inject.Inject;
 
@@ -42,7 +41,6 @@ public class GetForecast extends UseCase {
     }
 
     @Override
-    @RxLogObservable
     public Observable buildUseCaseObservable() {
         return mForecastRepository.getForecast(mCity.getLatitude(), mCity.getLongitude());
     }

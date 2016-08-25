@@ -173,11 +173,6 @@ public class CitiesListFragment extends BaseFragment
     }
 
     @Override
-    public void handleGenericErrors(Throwable error) {
-        handleBasicErrors(error);
-    }
-
-    @Override
     public void openPlacePicker() {
         City editingCity = null;
         if (mSelectedCities != null && mSelectedCities.size() > 0) {
@@ -299,7 +294,7 @@ public class CitiesListFragment extends BaseFragment
                     Place place = PlacePicker.getPlace(getActivity(), data);
                     City editingCity = mSelectedCities.get(0);
                     if (editingCity == null) {
-                        handleGenericErrors(new Exception());
+                        handleBasicError(new Exception());
                         break;
                     }
                     editingCity.setName(place.getName().toString());

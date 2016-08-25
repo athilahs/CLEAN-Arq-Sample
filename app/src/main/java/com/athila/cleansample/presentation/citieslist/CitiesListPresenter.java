@@ -7,6 +7,7 @@ import com.athila.cleansample.interactor.usecase.city.AddCities;
 import com.athila.cleansample.interactor.usecase.city.DeleteCities;
 import com.athila.cleansample.interactor.usecase.city.GetCities;
 import com.athila.cleansample.interactor.usecase.city.UpdateCity;
+import com.athila.cleansample.presentation.BasePresenter;
 import com.fernandocejas.frodo.annotation.RxLogSubscriber;
 import com.pushtorefresh.storio.sqlite.operations.delete.DeleteResults;
 import com.pushtorefresh.storio.sqlite.operations.put.PutResult;
@@ -20,7 +21,7 @@ import javax.inject.Inject;
 /**
  * Created by athila on 14/03/16.
  */
-public class CitiesListPresenter implements CitiesListContract.Presenter {
+public class CitiesListPresenter extends BasePresenter implements CitiesListContract.Presenter {
 
     private CitiesListContract.View mView;
     private GetCities mGetCities;
@@ -66,7 +67,7 @@ public class CitiesListPresenter implements CitiesListContract.Presenter {
 
     @Inject
     @Override
-    public void injectView() {
+    public void attachView() {
         mView.setPresenter(this);
     }
 
@@ -82,7 +83,7 @@ public class CitiesListPresenter implements CitiesListContract.Presenter {
         }
 
         if (mGetCities == null) {
-            mView.handleGenericErrors(new Exception("GetCities usecase is null. Cannot execute requested operation."));
+            handleBasicError(mView, new Exception("GetCities usecase is null. Cannot execute requested operation."));
             return;
         }
         mGetCities.unsubscribe();
@@ -97,7 +98,7 @@ public class CitiesListPresenter implements CitiesListContract.Presenter {
         }
 
         if (mUpdateCity == null) {
-            mView.handleGenericErrors(new Exception("UpdateCity usecase is null. Cannot execute requested operation."));
+            handleBasicError(mView, new Exception("UpdateCity usecase is null. Cannot execute requested operation."));
             return;
         }
         mUpdateCity.unsubscribe();
@@ -113,7 +114,7 @@ public class CitiesListPresenter implements CitiesListContract.Presenter {
         }
 
         if (mDeleteCities == null) {
-            mView.handleGenericErrors(new Exception("DeleteCities usecase is null. Cannot execute requested operation."));
+            handleBasicError(mView, new Exception("DeleteCities usecase is null. Cannot execute requested operation."));
             return;
         }
         mDeleteCities.unsubscribe();
@@ -129,7 +130,7 @@ public class CitiesListPresenter implements CitiesListContract.Presenter {
         }
 
         if (mAddCities == null) {
-            mView.handleGenericErrors(new Exception("AddCities usecase is null. Cannot execute requested operation."));
+            handleBasicError(mView, new Exception("AddCities usecase is null. Cannot execute requested operation."));
             return;
         }
         mAddCities.unsubscribe();
@@ -146,7 +147,7 @@ public class CitiesListPresenter implements CitiesListContract.Presenter {
         public void onError(Throwable e) {
             CleanSampleLog.error("Error on CitiesListPresenter::getCities: ", e);
             if (mView != null) {
-                mView.handleGenericErrors(e);
+                handleBasicError(mView, e);
             }
         }
 
@@ -178,7 +179,7 @@ public class CitiesListPresenter implements CitiesListContract.Presenter {
         public void onError(Throwable e) {
             CleanSampleLog.error("Error on CitiesListPresenter::updateCity: ", e);
             if (mView != null) {
-                mView.handleGenericErrors(e);
+                handleBasicError(mView, e);
             }
         }
 
@@ -196,7 +197,7 @@ public class CitiesListPresenter implements CitiesListContract.Presenter {
         public void onError(Throwable e) {
             CleanSampleLog.error("Error on CitiesListPresenter::deleteCities: ", e);
             if (mView != null) {
-                mView.handleGenericErrors(e);
+                handleBasicError(mView, e);
             }
         }
 
@@ -220,7 +221,7 @@ public class CitiesListPresenter implements CitiesListContract.Presenter {
         public void onError(Throwable e) {
             CleanSampleLog.error("Error on CitiesListPresenter::addCity: ", e);
             if (mView != null) {
-                mView.handleGenericErrors(e);
+                handleBasicError(mView, e);
             }
         }
 

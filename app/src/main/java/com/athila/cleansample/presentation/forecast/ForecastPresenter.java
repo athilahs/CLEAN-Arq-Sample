@@ -8,6 +8,7 @@ import com.athila.cleansample.infrastructure.CleanSampleLog;
 import com.athila.cleansample.interactor.rx.DefaultSubscriber;
 import com.athila.cleansample.interactor.usecase.city.GetCities;
 import com.athila.cleansample.interactor.usecase.forecast.GetForecast;
+import com.athila.cleansample.presentation.BasePresenter;
 
 import java.util.List;
 
@@ -18,14 +19,9 @@ import retrofit2.adapter.rxjava.HttpException;
 /**
  * Created by athila on 14/03/16.
  */
-public class ForecastPresenter implements ForecastContract.Presenter {
+public class ForecastPresenter extends BasePresenter implements ForecastContract.Presenter {
 
     private ForecastContract.View mView;
-    // TODO: ideally, these objects should reference the interface. Therefore, for the scenarios where the usecase depends
-    // TODO: on a parameter and this parameter changes more frequently than the presenter lifecycle, (like the City parameter
-    // TODO: of the getForecast method, where the parameter can change for this same presenter) we need to create seter method
-    // TODO: on the specific Usecase and, therefore, we can't use the interface.
-    // TODO: GetCities usecase could be referenced as interface.
     private GetForecast mGetForecast;
     private GetCities mGetCities;
 
@@ -38,7 +34,7 @@ public class ForecastPresenter implements ForecastContract.Presenter {
 
     @Override
     @Inject
-    public void injectView() {
+    public void attachView() {
         mView.setPresenter(this);
     }
 
@@ -68,7 +64,7 @@ public class ForecastPresenter implements ForecastContract.Presenter {
         }
 
         if (mGetForecast == null) {
-            mView.handleGenericErrors(new Exception("GetForecast usecase is null. Cannot execute requested operation."));
+            handleBasicError(mView, new Exception("GetForecast usecase is null. Cannot execute requested operation."));
             return;
         }
         mGetForecast.unsubscribe();
@@ -84,7 +80,7 @@ public class ForecastPresenter implements ForecastContract.Presenter {
         }
 
         if (mGetCities == null) {
-            mView.handleGenericErrors(new Exception("GetCities usecase is null. Cannot execute requested operation."));
+            handleBasicError(mView, new Exception("GetCities usecase is null. Cannot execute requested operation."));
             return;
         }
 
@@ -109,7 +105,7 @@ public class ForecastPresenter implements ForecastContract.Presenter {
                     // TODO: translate the Exception to a more view-friendly errorCode?
                     mView.handleForecastError((HttpException) e);
                 } else {
-                    mView.handleGenericErrors(e);
+                    handleBasicError(mView, e);
                 }
             }
         }

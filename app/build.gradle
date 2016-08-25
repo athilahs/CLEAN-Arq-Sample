@@ -108,7 +108,7 @@ dependencies {
 
     // Rx
     compile "io.reactivex:rxandroid:$rootProject.rxAndroidVersion"
-    compile "io.reactivex:rxjava:$rootProject.rxAndroidVersion"
+    compile "io.reactivex:rxjava:$rootProject.rxJavaVersion"
 
     // storIO
     compile "com.pushtorefresh.storio:sqlite:$rootProject.storIOVersion"

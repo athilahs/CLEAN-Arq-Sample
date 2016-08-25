@@ -5,12 +5,8 @@ import android.content.Context;
 import com.athila.cleansample.data.datasource.api.ForecastApi;
 import com.athila.cleansample.data.datasources.api.MockAPI;
 import com.athila.cleansample.data.model.Forecast;
-import com.athila.cleansample.di.api.component.DaggerMockRetrofitComponent;
-import com.athila.cleansample.di.api.module.MockRetrofitModule;
-import com.athila.cleansample.di.module.NetworkModule;
 
 import retrofit2.http.Path;
-import retrofit2.mock.MockRetrofit;
 import rx.Observable;
 
 /**
@@ -23,15 +19,10 @@ public abstract class MockForecastAPI extends MockAPI<ForecastApi> implements Fo
     protected Context mContext;
 
     protected MockForecastAPI(Context context) {
+        super(); // needed to construct mock retrofit
         mContext = context;
 
-        MockRetrofit mockRetrofit = DaggerMockRetrofitComponent.builder()
-                .networkModule(new NetworkModule())
-                .mockRetrofitModule(new MockRetrofitModule())
-                .build()
-                .mockRetrofit();
-
-        mDelegate = mockRetrofit.create(ForecastApi.class);
+        mockApi(ForecastApi.class);
     }
 
     // By default, methods will throw exception. Subclasses should override the desired behavior

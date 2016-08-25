@@ -81,7 +81,8 @@ public class CitiesListPresenterTest {
         doCallRealMethod().when(mDeleteCities).execute(any(Subscriber.class));
         doCallRealMethod().when(mDeleteCities).execute(any(Subscriber.class), any(Observable.Transformer.class));
 
-        mPresenter = new CitiesListPresenter(mView, mGetCities, mUpdateCity, mDeleteCities, mAddCities);
+        // Necessary spy in order to test superclass method invocation (like handleBasicError)
+        mPresenter = Mockito.spy(new CitiesListPresenter(mView, mGetCities, mUpdateCity, mDeleteCities, mAddCities));
     }
 
     @Test
@@ -108,7 +109,7 @@ public class CitiesListPresenterTest {
         mPresenter.getCities();
 
         verify(mGetCities).execute(any(Subscriber.class));
-        verify(mView).handleGenericErrors(any(Throwable.class));
+        verify(mPresenter).handleBasicError(any(CitiesListContract.View.class), any(Exception.class));
     }
 
     @Test
@@ -139,7 +140,7 @@ public class CitiesListPresenterTest {
         mPresenter.addCity(Mockito.mock(City.class));
         verify(mAddCities).setCitiesToBeAdded(anyListOf(City.class));
         verify(mAddCities).execute(any(Subscriber.class));
-        verify(mView).handleGenericErrors(any(Throwable.class));
+        verify(mPresenter).handleBasicError(any(CitiesListContract.View.class), any(Exception.class));
     }
 
     @Test
@@ -159,7 +160,7 @@ public class CitiesListPresenterTest {
         mPresenter.updateCity(mockCity);
         verify(mUpdateCity).setUpdatedCity(mockCity);
         verify(mUpdateCity).execute(any(Subscriber.class));
-        verify(mView).handleGenericErrors(any(Throwable.class));
+        verify(mPresenter).handleBasicError(any(CitiesListContract.View.class), any(Exception.class));
     }
 
     @Test
@@ -177,7 +178,7 @@ public class CitiesListPresenterTest {
         mPresenter.deleteCities(mock(List.class));
         verify(mDeleteCities).setCitiesToBeDeleted(anyListOf(City.class));
         verify(mDeleteCities).execute(any(Subscriber.class));
-        verify(mView).handleGenericErrors(any(Throwable.class));
+        verify(mPresenter).handleBasicError(any(CitiesListContract.View.class), any(Exception.class));
     }
 
     @After

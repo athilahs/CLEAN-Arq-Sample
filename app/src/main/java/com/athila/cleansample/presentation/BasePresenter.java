@@ -1,10 +1,17 @@
 package com.athila.cleansample.presentation;
 
+import android.support.annotation.VisibleForTesting;
+
 /**
  * Created by athila on 14/03/16.
  */
-public interface BasePresenter {
-    void injectView();
-    void start();
-    void stop();
+public abstract class BasePresenter {
+    
+    @VisibleForTesting
+    public boolean handleBasicError(BaseViewContract view, Throwable error) {
+        return view != null
+                && view instanceof BasicErrorsHandlerView
+                && ((BasicErrorsHandlerView) view).handleBasicError(error);
+
+    }
 }
