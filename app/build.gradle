@@ -1,145 +1,146 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'com.fernandocejas.frodo'
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
+  compileSdkVersion rootProject.ext.compileSdkVersion
+  buildToolsVersion rootProject.ext.buildToolsVersion
 
-    defaultConfig {
-        applicationId "com.athila.cleansample"
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+  defaultConfig {
+    applicationId "com.athila.cleansample"
+    minSdkVersion rootProject.ext.minSdkVersion
+    targetSdkVersion rootProject.ext.targetSdkVersion
+    versionCode 1
+    versionName "1.0"
 
-        buildConfigField("String", "HOST", "\"https://api.forecast.io/\"")
+    buildConfigField("String", "HOST", "\"https://api.forecast.io/\"")
 
-        // For vector drawables in support library
-        vectorDrawables.useSupportLibrary = true
+    // For vector drawables in support library
+    vectorDrawables.useSupportLibrary = true
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+  }
+
+  buildTypes {
+    debug {
+      applicationIdSuffix ".debug"
+      buildConfigField("int", "LOG_LEVEL", "4") // CleanSampleLog.LOG_LEVEL_DEBUG = 4;
+
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
     }
 
-    buildTypes {
-        debug {
-            applicationIdSuffix ".debug"
-            buildConfigField("int", "LOG_LEVEL", "4") // CleanSampleLog.LOG_LEVEL_DEBUG = 4;
+    stage {
+      initWith(buildTypes.debug)
 
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-
-        stage {
-            initWith(buildTypes.debug)
-
-            applicationIdSuffix ".stage"
-            buildConfigField("int", "LOG_LEVEL", "2") // CleanSampleLog.LOG_LEVEL_WARN = 2;
-            // Set base URL for stage builds
-            // buildConfigField("String", "HOST", "\"<stage_base_url>\"")
-        }
-
-        release {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-
-            buildConfigField("int", "LOG_LEVEL", "0") // CleanSampleLog.LOG_LEVEL_NONE = 0;
-            // Set base URL for production builds
-            // buildConfigField("String", "HOST", "\"<production_base_url>\"")
-        }
+      applicationIdSuffix ".stage"
+      buildConfigField("int", "LOG_LEVEL", "2") // CleanSampleLog.LOG_LEVEL_WARN = 2;
+      // Set base URL for stage builds
+      // buildConfigField("String", "HOST", "\"<stage_base_url>\"")
     }
 
-    productFlavors {
-        // For this app, lets use flavor to make DI. In a real project consider using Dagger2
-        mock {
-            applicationIdSuffix = ".mock"
-        }
-        prod {
+    release {
+      minifyEnabled true
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
-        }
+      buildConfigField("int", "LOG_LEVEL", "0") // CleanSampleLog.LOG_LEVEL_NONE = 0;
+      // Set base URL for production builds
+      // buildConfigField("String", "HOST", "\"<production_base_url>\"")
     }
+  }
 
-    // For Butter Knife
-    lintOptions {
-        disable 'InvalidPackage'
-        abortOnError false
+  flavorDimensions "build"
+  productFlavors {
+    // For this app, lets use flavor to make DI. In a real project consider using Dagger2
+    mock {
+      applicationIdSuffix = ".mock"
+      dimension "build"
     }
+    prod {
+      dimension "build"
+    }
+  }
 
-    // This is necessary to avoid RuntimeExceptions when unit testing classes containing Log instructions, for instance
-    testOptions {
-        unitTests.returnDefaultValues = true
-    }
+  // For Butter Knife
+  lintOptions {
+    disable 'InvalidPackage'
+    abortOnError false
+  }
+
+  // This is necessary to avoid RuntimeExceptions when unit testing classes containing Log instructions, for instance
+  testOptions {
+    unitTests.returnDefaultValues = true
+  }
 }
 
 // Loop variants
 android.variantFilter { variant ->
-    // Loop flavors
-    variant.getFlavors().each { flavor ->
-        println variant.buildType.name + " " + flavor.name + " "
-        // For mock flavor, only debug builds are available
-        if (flavor.name.equals('mock')) {
-            if (variant.buildType.name.equals('stage')
-            || variant.buildType.name.equals('release')) {
-                variant.setIgnore(true)
-            }
-        }
+  // Loop flavors
+  variant.getFlavors().each { flavor ->
+    println variant.buildType.name + " " + flavor.name + " "
+    // For mock flavor, only debug builds are available
+    if (flavor.name.equals('mock')) {
+      if (variant.buildType.name.equals('stage') || variant.buildType.name.equals('release')) {
+        variant.setIgnore(true)
+      }
     }
+  }
 }
 
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+  compile fileTree(dir: 'libs', include: ['*.jar'])
 
-    // Google stuffs
-    compile "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
-    compile "com.android.support:support-v4:$rootProject.supportLibraryVersion"
-    compile "com.android.support:design:$rootProject.supportLibraryVersion"
-    compile "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
-    compile "com.google.android.gms:play-services-location:$rootProject.googlePlayServicesVersion"
+  // Google stuffs
+  compile "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
+  compile "com.android.support:support-v4:$rootProject.supportLibraryVersion"
+  compile "com.android.support:design:$rootProject.supportLibraryVersion"
+  compile "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
+  compile "com.google.android.gms:play-services-location:$rootProject.googlePlayServicesVersion"
 
-    // ButterKnife
-    compile "com.jakewharton:butterknife:$rootProject.butterKnifeVersion"
+  // ButterKnife
+  compile "com.jakewharton:butterknife:$rootProject.butterKnifeVersion"
+  annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.butterKnifeVersion"
 
-    // Retrofit
-    compile "com.squareup.retrofit2:retrofit:$rootProject.retrofitVersion"
-    compile "com.squareup.retrofit2:converter-gson:$rootProject.retrofitVersion"
-    compile "com.squareup.okhttp3:logging-interceptor:$rootProject.retrofitLoggingInterceptorVersion"
-    compile "com.squareup.retrofit2:adapter-rxjava:$retrofitVersion"
+  // Retrofit
+  compile "com.squareup.retrofit2:retrofit:$rootProject.retrofitVersion"
+  compile "com.squareup.retrofit2:converter-gson:$rootProject.retrofitVersion"
+  compile "com.squareup.okhttp3:logging-interceptor:$rootProject.retrofitLoggingInterceptorVersion"
+  compile "com.squareup.retrofit2:adapter-rxjava:$retrofitVersion"
 
-    // Rx
-    compile "io.reactivex:rxandroid:$rootProject.rxAndroidVersion"
-    compile "io.reactivex:rxjava:$rootProject.rxJavaVersion"
+  // Rx
+  compile "io.reactivex:rxandroid:$rootProject.rxAndroidVersion"
+  compile "io.reactivex:rxjava:$rootProject.rxJavaVersion"
 
-    // storIO
-    compile "com.pushtorefresh.storio:sqlite:$rootProject.storIOVersion"
-    compile "com.pushtorefresh.storio:sqlite-annotations:$rootProject.storIOVersion"
-    apt "com.pushtorefresh.storio:sqlite-annotations-processor:$rootProject.storIOVersion"
+  // storIO
+  compile "com.pushtorefresh.storio:sqlite:$rootProject.storIOVersion"
+  compile "com.pushtorefresh.storio:sqlite-annotations:$rootProject.storIOVersion"
+  annotationProcessor "com.pushtorefresh.storio:sqlite-annotations-processor:$rootProject.storIOVersion"
 
-    // Dagger2
-    apt "com.google.dagger:dagger-compiler:$rootProject.dagger2Version"
-    compile "com.google.dagger:dagger:$rootProject.dagger2Version"
-    provided "javax.annotation:jsr250-api:1.0"
+  // Dagger2
+  annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.dagger2Version"
+  compile "com.google.dagger:dagger:$rootProject.dagger2Version"
+  provided "javax.annotation:jsr250-api:1.0"
 
-    // Unit tests
-    testCompile "junit:junit:$rootProject.junitVersion"
-    testCompile "org.mockito:mockito-all:$rootProject.mockitoVersion"
-    testCompile "org.powermock:powermock-module-junit4:$rootProject.powerMockitoVersion"
-    testCompile "org.powermock:powermock-api-mockito:$rootProject.powerMockitoVersion"
-    testCompile "org.robolectric:robolectric:$rootProject.robolectricVersion"
+  // Unit tests
+  testCompile "junit:junit:$rootProject.junitVersion"
+  testCompile "org.mockito:mockito-all:$rootProject.mockitoVersion"
+  testCompile "org.powermock:powermock-module-junit4:$rootProject.powerMockitoVersion"
+  testCompile "org.powermock:powermock-api-mockito:$rootProject.powerMockitoVersion"
+  testCompile "org.robolectric:robolectric:$rootProject.robolectricVersion"
 
-    // Android Testing Support Library's runner and rules
-    androidTestCompile "com.android.support.test:runner:$rootProject.runnerVersion"
-    androidTestCompile "com.android.support.test:rules:$rootProject.runnerVersion"
+  // Android Testing Support Library's runner and rules
+  androidTestCompile "com.android.support.test:runner:$rootProject.runnerVersion"
+  androidTestCompile "com.android.support.test:rules:$rootProject.runnerVersion"
 
-    // Dependencies for Android Testing
-    androidTestCompile "junit:junit:$rootProject.junitVersion"
-    androidTestCompile "org.mockito:mockito-all:$rootProject.mockitoVersion"
-    androidTestCompile "org.powermock:powermock-module-junit4:$rootProject.powerMockitoVersion"
-    androidTestCompile "org.powermock:powermock-api-mockito:$rootProject.powerMockitoVersion"
-    androidTestCompile "com.android.support.test.espresso:espresso-core:$rootProject.espressoVersion"
-    // Used only on mock flavor
-    mockCompile "com.squareup.retrofit2:retrofit-mock:$rootProject.retrofitVersion"
+  // Dependencies for Android Testing
+  androidTestCompile "junit:junit:$rootProject.junitVersion"
+  androidTestCompile "org.mockito:mockito-all:$rootProject.mockitoVersion"
+  androidTestCompile "org.powermock:powermock-module-junit4:$rootProject.powerMockitoVersion"
+  androidTestCompile "org.powermock:powermock-api-mockito:$rootProject.powerMockitoVersion"
+  androidTestCompile "com.android.support.test.espresso:espresso-core:$rootProject.espressoVersion"
+  // Used only on mock flavor
+  mockCompile "com.squareup.retrofit2:retrofit-mock:$rootProject.retrofitVersion"
 
-    // Resolve conflicts between main and test APK:
-    androidTestCompile "com.android.support:support-annotations:$rootProject.supportLibraryVersion"
+  // Resolve conflicts between main and test APK:
+  androidTestCompile "com.android.support:support-annotations:$rootProject.supportLibraryVersion"
 }

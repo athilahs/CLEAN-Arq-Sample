@@ -15,24 +15,24 @@
  */
 package com.athila.cleansample.interactor.usecase.city;
 
+import com.athila.cleansample.data.model.City;
 import com.athila.cleansample.data.repository.city.CityRepository;
 import com.athila.cleansample.interactor.usecase.UseCase;
-
+import java.util.List;
 import javax.inject.Inject;
-
 import rx.Observable;
 
-public class GetCities extends UseCase {
+public class GetCities extends UseCase<List<City>, Void> {
 
-    private CityRepository mCityRepository;
+  private CityRepository mCityRepository;
 
-    @Inject
-    public GetCities(CityRepository cityRepository) {
-        mCityRepository = cityRepository;
-    }
+  @Inject
+  public GetCities(CityRepository cityRepository) {
+    mCityRepository = cityRepository;
+  }
 
-    @Override
-    public Observable buildUseCaseObservable() {
-        return mCityRepository.getCities();
-    }
+  @Override
+  public Observable<List<City>> buildUseCaseObservable(Void unused) {
+    return mCityRepository.getCities();
+  }
 }

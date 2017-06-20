@@ -15,33 +15,43 @@
  */
 package com.athila.cleansample.interactor.usecase.city;
 
+import android.support.annotation.VisibleForTesting;
 import com.athila.cleansample.data.model.City;
 import com.athila.cleansample.data.repository.city.CityRepository;
 import com.athila.cleansample.interactor.usecase.UseCase;
-
+import com.pushtorefresh.storio.sqlite.operations.put.PutResults;
 import java.util.List;
-
 import javax.inject.Inject;
-
 import rx.Observable;
 
-public class AddCities extends UseCase {
+public class AddCities extends UseCase<PutResults<City>, AddCities.AddCitiesParams> {
 
-    private CityRepository mCityRepository;
-    // Clients must set this before executing the usecase
-    private List<City> mCitiesToBeAdded;
+  private CityRepository mCityRepository;
 
-    @Inject
-    public AddCities(CityRepository cityRepository) {
-        mCityRepository = cityRepository;
+  @Inject
+  public AddCities(CityRepository cityRepository) {
+    mCityRepository = cityRepository;
+  }
+
+  @Override
+  public Observable<PutResults<City>> buildUseCaseObservable(AddCitiesParams params) {
+    return mCityRepository.insertCities(params.cities);
+  }
+
+  public static final class AddCitiesParams {
+    private List<City> cities;
+
+    private AddCitiesParams(List<City> cities) {
+      this.cities = cities;
     }
 
-    public void setCitiesToBeAdded(List<City> citiesToBeAdded) {
-        mCitiesToBeAdded = citiesToBeAdded;
+    @VisibleForTesting
+    public List<City> getCities() {
+      return cities;
     }
 
-    @Override
-    public Observable buildUseCaseObservable() {
-        return mCityRepository.insertCities(mCitiesToBeAdded);
+    public static AddCitiesParams forCities(List<City> cities) {
+      return new AddCitiesParams(cities);
     }
+  }
 }

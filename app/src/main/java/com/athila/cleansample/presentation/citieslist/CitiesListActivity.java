@@ -1,147 +1,143 @@
 package com.athila.cleansample.presentation.citieslist;
 
 import android.Manifest;
-import android.app.Fragment;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import com.athila.cleansample.R;
 import com.athila.cleansample.di.component.CitiesListComponent;
 import com.athila.cleansample.di.component.DaggerCitiesListComponent;
 import com.athila.cleansample.di.module.presentation.CitiesListPresenterModule;
 import com.athila.cleansample.infrastructure.CleanSampleApp;
 import com.athila.cleansample.presentation.BaseActivity;
-
 import javax.inject.Inject;
-
-import butterknife.Bind;
-import butterknife.ButterKnife;
-
 
 public class CitiesListActivity extends BaseActivity implements CitiesListContract.PermissionChecker {
 
-    private static final int PERMISSIONS_REQUEST_FINE_LOCATION = 1;
+  private static final int PERMISSIONS_REQUEST_FINE_LOCATION = 1;
 
-    private CitiesListContract.CityManagementController mCityManagementController;
+  private CitiesListContract.CityManagementController mCityManagementController;
 
-    @Bind(R.id.cities_list_fab)
-    FloatingActionButton mFab;
+  @BindView(R.id.cities_list_fab)
+  FloatingActionButton mFab;
 
-    @Bind(R.id.cities_list_screen_parent_layout)
-    View mParentLayout;
+  @BindView(R.id.cities_list_screen_parent_layout)
+  View mParentLayout;
 
-    private CitiesListComponent mCitiesListComponent;
+  private Unbinder mUnbinder;
 
-    @Inject
-    CitiesListPresenter mPresenter;
+  private CitiesListComponent mCitiesListComponent;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_cities_list);
+  @Inject
+  CitiesListPresenter mPresenter;
 
-        ButterKnife.bind(this);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        //noinspection ConstantConditions
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_cities_list);
 
-        setTitle(R.string.title_activity_cities_list);
-        setListeners();
+    mUnbinder = ButterKnife.bind(this);
+    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+    setSupportActionBar(toolbar);
+    //noinspection ConstantConditions
+    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+    setTitle(R.string.title_activity_cities_list);
+    setListeners();
+  }
+
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+
+    mUnbinder.unbind();
+    mCitiesListComponent = null;
+  }
+
+  @Override
+  public void onAttachFragment(Fragment fragment) {
+    if (fragment instanceof CitiesListContract.View) {
+      initializeInjector((CitiesListContract.View) fragment);
     }
+  }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mCitiesListComponent = null;
-    }
+  private void initializeInjector(CitiesListContract.View citiesListView) {
+    // initialize injector
+    mCitiesListComponent = DaggerCitiesListComponent.builder()
+        .applicationComponent(((CleanSampleApp) (getApplication())).getApplicationComponent())
+        .citiesListPresenterModule(new CitiesListPresenterModule(citiesListView))
+        .build();
+    mCitiesListComponent.inject(this);
+  }
 
-    @Override
-    public void onAttachFragment(Fragment fragment) {
-        if (fragment instanceof CitiesListContract.View) {
-            initializeInjector((CitiesListContract.View)fragment);
-        }
-    }
+  void setCityManagementController(CitiesListContract.CityManagementController cityManagementController) {
+    mCityManagementController = cityManagementController;
+  }
 
-    private void initializeInjector(CitiesListContract.View citiesListView) {
-        // initialize injector
-        mCitiesListComponent = DaggerCitiesListComponent.builder()
-                .applicationComponent(((CleanSampleApp)(getApplication())).getApplicationComponent())
-                .citiesListPresenterModule(new CitiesListPresenterModule(citiesListView))
-                .build();
-        mCitiesListComponent.inject(this);
-    }
+  private void setListeners() {
+    mFab.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        openPermissionFlowIfNeeded();
+      }
+    });
+  }
 
-    void setCityManagementController(CitiesListContract.CityManagementController cityManagementController) {
-        mCityManagementController = cityManagementController;
-    }
+  @Override
+  public void openPermissionFlowIfNeeded() {
+    if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-    private void setListeners() {
-        mFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openPermissionFlowIfNeeded();
-            }
+      // Should we show an explanation?
+      if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+        // Explain the user why we need the permission
+        Snackbar explanation = Snackbar.make(mParentLayout, R.string.permission_explanation, Snackbar.LENGTH_INDEFINITE);
+        explanation.setAction(R.string.ok, new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            ActivityCompat.requestPermissions(CitiesListActivity.this, new String[] { Manifest.permission.ACCESS_FINE_LOCATION },
+                PERMISSIONS_REQUEST_FINE_LOCATION);
+          }
         });
+        explanation.show();
+      } else {
+        ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.ACCESS_FINE_LOCATION },
+            PERMISSIONS_REQUEST_FINE_LOCATION);
+      }
+    } else {
+      if (mCityManagementController != null) {
+        mCityManagementController.openPlacePicker();
+      }
     }
+  }
 
-    @Override
-    public void openPermissionFlowIfNeeded() {
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+  @Override
+  public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+    switch (requestCode) {
+      case PERMISSIONS_REQUEST_FINE_LOCATION:
+        // If request is cancelled, the result arrays are empty.
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-
-                // Explain the user why we need the permission
-                Snackbar explanation = Snackbar.make(mParentLayout, R.string.permission_explanation, Snackbar.LENGTH_INDEFINITE);
-                explanation.setAction(R.string.ok, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ActivityCompat.requestPermissions(CitiesListActivity.this,
-                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                PERMISSIONS_REQUEST_FINE_LOCATION);
-                    }
-                });
-                explanation.show();
-
-            } else {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        PERMISSIONS_REQUEST_FINE_LOCATION);
-            }
+          if (mCityManagementController != null) {
+            mCityManagementController.openPlacePicker();
+          }
         } else {
-            if (mCityManagementController != null) {
-                mCityManagementController.openPlacePicker();
-            }
+
+          // permission denied, open an ugly City picker
+          if (mCityManagementController != null) {
+            mCityManagementController.openCityInputDialog();
+          }
         }
     }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_FINE_LOCATION:
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    if (mCityManagementController != null) {
-                        mCityManagementController.openPlacePicker();
-                    }
-                } else {
-
-                    // permission denied, open an ugly City picker
-                    if (mCityManagementController != null) {
-                        mCityManagementController.openCityInputDialog();
-                    }
-                }
-        }
-    }
+  }
 }

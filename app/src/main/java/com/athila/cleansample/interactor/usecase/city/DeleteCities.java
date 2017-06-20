@@ -15,33 +15,43 @@
  */
 package com.athila.cleansample.interactor.usecase.city;
 
+import android.support.annotation.VisibleForTesting;
 import com.athila.cleansample.data.model.City;
 import com.athila.cleansample.data.repository.city.CityRepository;
 import com.athila.cleansample.interactor.usecase.UseCase;
-
+import com.pushtorefresh.storio.sqlite.operations.delete.DeleteResults;
 import java.util.List;
-
 import javax.inject.Inject;
-
 import rx.Observable;
 
-public class DeleteCities extends UseCase {
+public class DeleteCities extends UseCase<DeleteResults<City>, DeleteCities.DeleteCitiesParams> {
 
-    private CityRepository mCityRepository;
-    // Clients must set this before executing the usecase
-    private List<City> mCitiesToBeDeleted;
+  private CityRepository mCityRepository;
 
-    @Inject
-    public DeleteCities(CityRepository cityRepository) {
-        mCityRepository = cityRepository;
+  @Inject
+  public DeleteCities(CityRepository cityRepository) {
+    mCityRepository = cityRepository;
+  }
+
+  @Override
+  public Observable<DeleteResults<City>> buildUseCaseObservable(DeleteCitiesParams params) {
+    return mCityRepository.deleteCities(params.cities);
+  }
+
+  public static final class DeleteCitiesParams {
+    private List<City> cities;
+
+    private DeleteCitiesParams(List<City> cities) {
+      this.cities = cities;
     }
 
-    public void setCitiesToBeDeleted(List<City> citiesToBeDeleted) {
-        mCitiesToBeDeleted = citiesToBeDeleted;
+    @VisibleForTesting
+    public List<City> getCities() {
+      return cities;
     }
 
-    @Override
-    public Observable buildUseCaseObservable() {
-        return mCityRepository.deleteCities(mCitiesToBeDeleted);
+    public static DeleteCitiesParams forCities(List<City> cities) {
+      return new DeleteCitiesParams(cities);
     }
+  }
 }

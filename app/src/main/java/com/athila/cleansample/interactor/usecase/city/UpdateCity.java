@@ -15,31 +15,43 @@
  */
 package com.athila.cleansample.interactor.usecase.city;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 import com.athila.cleansample.data.model.City;
 import com.athila.cleansample.data.repository.city.CityRepository;
 import com.athila.cleansample.interactor.usecase.UseCase;
-
+import com.pushtorefresh.storio.sqlite.operations.put.PutResult;
 import javax.inject.Inject;
-
 import rx.Observable;
 
-public class UpdateCity extends UseCase {
+public class UpdateCity extends UseCase<PutResult, UpdateCity.UpdateCityParams> {
 
-    private CityRepository mCityRepository;
-    // Clients must set this before executing the usecase
-    private City mUpdatedCity;
+  private CityRepository mCityRepository;
 
-    @Inject
-    public UpdateCity(CityRepository cityRepository) {
-        mCityRepository = cityRepository;
+  @Inject
+  public UpdateCity(CityRepository cityRepository) {
+    mCityRepository = cityRepository;
+  }
+
+  @Override
+  public Observable buildUseCaseObservable(@NonNull UpdateCityParams params) {
+    return mCityRepository.updateCity(params.city);
+  }
+
+  public static final class UpdateCityParams {
+    private City city;
+
+    private UpdateCityParams(City city) {
+      this.city = city;
     }
 
-    public void setUpdatedCity(City updatedCity) {
-        mUpdatedCity = updatedCity;
+    @VisibleForTesting
+    public City getCity() {
+      return city;
     }
 
-    @Override
-    public Observable buildUseCaseObservable() {
-        return mCityRepository.updateCity(mUpdatedCity);
+    public static UpdateCityParams forCity(City city) {
+      return new UpdateCityParams(city);
     }
+  }
 }

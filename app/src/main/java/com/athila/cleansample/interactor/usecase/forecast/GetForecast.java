@@ -15,33 +15,46 @@
  */
 package com.athila.cleansample.interactor.usecase.forecast;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 import com.athila.cleansample.data.model.City;
+import com.athila.cleansample.data.model.Forecast;
 import com.athila.cleansample.data.repository.forecast.ForecastRepository;
 import com.athila.cleansample.interactor.usecase.UseCase;
-
 import javax.inject.Inject;
-
 import rx.Observable;
 
 /**
  * Usecase implementation to retrieve the Forecasts given the City model
  */
-public class GetForecast extends UseCase {
+public class GetForecast extends UseCase<Forecast, GetForecast.GetForecastParams> {
 
-    private ForecastRepository mForecastRepository;
-    private City mCity;
+  private ForecastRepository mForecastRepository;
 
-    @Inject
-    public GetForecast(ForecastRepository forecastRepository) {
-        mForecastRepository = forecastRepository;
+  @Inject
+  public GetForecast(ForecastRepository forecastRepository) {
+    mForecastRepository = forecastRepository;
+  }
+
+  @Override
+  public Observable<Forecast> buildUseCaseObservable(@NonNull GetForecastParams getForecastParams) {
+    return mForecastRepository.getForecast(getForecastParams.city.getLatitude(), getForecastParams.city.getLongitude());
+  }
+
+  public static final class GetForecastParams {
+    private final City city;
+
+    private GetForecastParams(City city) {
+      this.city = city;
     }
 
-    public void setCity(City city) {
-        mCity = city;
+    @VisibleForTesting
+    public City getCity() {
+      return city;
     }
 
-    @Override
-    public Observable buildUseCaseObservable() {
-        return mForecastRepository.getForecast(mCity.getLatitude(), mCity.getLongitude());
+    public static GetForecastParams forCity(City city) {
+      return new GetForecastParams(city);
     }
+  }
 }

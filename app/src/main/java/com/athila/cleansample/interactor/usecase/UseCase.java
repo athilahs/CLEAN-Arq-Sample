@@ -16,9 +16,7 @@
 package com.athila.cleansample.interactor.usecase;
 
 import android.support.annotation.NonNull;
-
 import com.athila.cleansample.interactor.rx.RxSchedulers;
-
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
@@ -32,58 +30,56 @@ import rx.subscriptions.Subscriptions;
  * By convention each UseCase implementation will return the result using a {@link rx.Subscriber}
  * that will execute its job in a background thread and will post the result in the UI thread.
  */
-public abstract class UseCase {
+public abstract class UseCase<T, Params> {
 
-    private Subscription mSubscription = Subscriptions.empty();
+  private Subscription mSubscription = Subscriptions.empty();
 
-    /**
-     * Builds an {@link rx.Observable} which will be used when executing the current {@link UseCase}.
-     * Any business rules should be placed here by manipulating the Observable built before returning it to the
-     * calling client
-     */
-    protected abstract Observable buildUseCaseObservable();
+  /**
+   * Builds an {@link rx.Observable} which will be used when executing the current {@link UseCase}.
+   * Any business rules should be placed here by manipulating the Observable built before returning it to the
+   * calling client
+   */
+  protected abstract Observable<T> buildUseCaseObservable(Params params);
 
-    /**
-     * Executes the current use case using default transformer as provided by {@link RxSchedulers}
-     *
-     * @param useCaseSubscriber subscriber which will listen for results delivered by the Obsevable built
-     *                          with {@link #buildUseCaseObservable()}.
-     */
-    @SuppressWarnings("unchecked")
-    public void execute(@NonNull Subscriber useCaseSubscriber) {
-        execute(useCaseSubscriber, RxSchedulers.applyDefaultSchedulers());
+  /**
+   * Executes the current use case using default transformer as provided by {@link RxSchedulers}
+   *
+   * @param useCaseSubscriber subscriber which will listen for results delivered by the Obsevable built
+   * with {@link #buildUseCaseObservable(Params)}.
+   */
+  @SuppressWarnings("unchecked")
+  public void execute(@NonNull Subscriber useCaseSubscriber, Params params) {
+    execute(useCaseSubscriber, params, RxSchedulers.applyDefaultSchedulers());
+  }
+
+  /**
+   * Executes the current use case using the provided Transformer.
+   *
+   * @param useCaseSubscriber subscriber which will listen for results delivered by the Obsevable built
+   * with {@link #buildUseCaseObservable(Params)}.
+   * @param transformer the transformer to be applied on built observable. It can be to select execution / delivery thread
+   */
+  @SuppressWarnings("unchecked")
+  public void execute(@NonNull Subscriber useCaseSubscriber, Params params, Observable.Transformer transformer) {
+    // Need to use the calling chain. It does not work if we break the chain like:
+    // Observable o = buildUseCaseObservable();
+    // if (transformer != null) {
+    //      o.compose(transformer)
+    // }
+    if (transformer != null) {
+      mSubscription = buildUseCaseObservable(params).compose(transformer)
+          .subscribe(useCaseSubscriber);
+    } else {
+      mSubscription = buildUseCaseObservable(params).subscribe(useCaseSubscriber);
     }
+  }
 
-    /**
-     * Executes the current use case using the provided Transformer.
-     *
-     * @param useCaseSubscriber subscriber which will listen for results delivered by the Obsevable built
-     *                          with {@link #buildUseCaseObservable()}.
-     * @param transformer       the transformer to be applied on built observable. It can be to select execution / delivery thread
-     */
-    @SuppressWarnings("unchecked")
-    public void execute(@NonNull Subscriber useCaseSubscriber, Observable.Transformer transformer) {
-        // Need to use the calling chain. It does not work if we break the chain like:
-        // Observable o = buildUseCaseObservable();
-        // if (transformer != null) {
-        //      o.compose(transformer)
-        // }
-        if (transformer != null) {
-            mSubscription = buildUseCaseObservable()
-                    .compose(transformer)
-                    .subscribe(useCaseSubscriber);
-        } else {
-            mSubscription = buildUseCaseObservable()
-                    .subscribe(useCaseSubscriber);
-        }
+  /**
+   * Unsubscribes from current {@link rx.Subscription}.
+   */
+  public void unsubscribe() {
+    if (mSubscription != null && !mSubscription.isUnsubscribed()) {
+      mSubscription.unsubscribe();
     }
-
-    /**
-     * Unsubscribes from current {@link rx.Subscription}.
-     */
-    public void unsubscribe() {
-        if (mSubscription != null && !mSubscription.isUnsubscribed()) {
-            mSubscription.unsubscribe();
-        }
-    }
+  }
 }
