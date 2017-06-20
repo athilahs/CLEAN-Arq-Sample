@@ -104,7 +104,7 @@ public class CitiesListPresenterTest {
     setupGetCities(SETUP_SUCCESS);
     mPresenter.getCities();
 
-    verify(mGetCities).execute(any(Subscriber.class), null);
+    verify(mGetCities).execute(any(Subscriber.class), any(Void.class), any(Observable.Transformer.class));
     verify(mView).showCitiesList(anyListOf(City.class));
   }
 

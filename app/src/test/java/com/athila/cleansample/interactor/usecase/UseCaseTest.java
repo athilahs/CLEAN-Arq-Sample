@@ -35,7 +35,7 @@ public class UseCaseTest {
 
     TestSubscriber<Integer> testSubscriber = new TestSubscriber<>();
     // TestSubscriber is synchronous and does not work with transformer. Pass null.
-    mUseCase.execute(testSubscriber, null);
+    mUseCase.execute(testSubscriber, null, null);
     testSubscriber.assertNoValues();
     testSubscriber.assertCompleted();
   }
@@ -50,7 +50,7 @@ public class UseCaseTest {
 
     TestSubscriber<Integer> testSubscriber = new TestSubscriber<>();
     // TestSubscriber is synchronous and does not work with transformer. Pass null.
-    mUseCase.execute(testSubscriber, null);
+    mUseCase.execute(testSubscriber, null, null);
     testSubscriber.assertReceivedOnNext(values);
     testSubscriber.assertCompleted();
   }
@@ -62,7 +62,7 @@ public class UseCaseTest {
 
     TestSubscriber<Integer> testSubscriber = new TestSubscriber<>();
     // TestSubscriber is synchronous and does not work with transformer. Pass null.
-    mUseCase.execute(testSubscriber, null);
+    mUseCase.execute(testSubscriber, null, null);
     testSubscriber.assertError(mockException);
   }
 }
